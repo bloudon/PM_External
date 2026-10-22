@@ -52,7 +52,7 @@ export default function Home() {
         <div className="mt-12 grid md:grid-cols-3 gap-px bg-background/20">
           {benefits.map((b, i) => (
             <Reveal key={b.t} delay={i * 0.08} className="bg-[hsl(236_55%_10%)] p-7">
-              <b.i className="h-7 w-7 text-accent" aria-hidden />
+              <b.i className="h-7 w-7 text-primary" aria-hidden />
               <h3 className="font-display text-xl font-bold mt-6">{b.t}</h3>
               <p className="mt-2 text-background/75">{b.d}</p>
             </Reveal>
