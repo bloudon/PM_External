@@ -35,7 +35,7 @@ export function Cta({ href, children, variant = 'primary', arrow, id }: { href: 
 export function Eyebrow({ children, dark }: { children: ReactNode; dark?: boolean }) {
   return (
     <p className={`font-mono text-xs uppercase tracking-[0.18em] mb-4 flex items-center gap-2 ${dark ? 'text-[hsl(200_88%_62%)]' : 'text-primary'}`}>
-      <span className="h-2 w-2 bg-accent inline-block" aria-hidden />
+      <span className="h-2 w-2 bg-primary inline-block" aria-hidden />
       {children}
     </p>
   );
