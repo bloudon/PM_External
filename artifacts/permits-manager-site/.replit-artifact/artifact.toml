@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Permits Manager Website"
+description = "A responsive public marketing website for Permits Manager with audience-specific pages, signup and demo request forms, configurable application sign-in, and source suitable for Git-based deployment to an Ubuntu VPS."
+version = "1.0.0"
+id = "artifacts/permits-manager-site"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 18846
+
+[services.development]
+run = "pnpm --filter @workspace/permits-manager-site run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/permits-manager-site", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/permits-manager-site/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "18846"
+BASE_PATH = "/"
