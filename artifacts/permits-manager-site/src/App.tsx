@@ -13,20 +13,13 @@ import {
 
 const queryClient = new QueryClient();
 
-function Home() {
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900">
-          Replit Agent is building...
-        </h1>
-        <p className="mt-2 text-sm text-gray-600">
-          Your app will appear here once it's ready.
-        </p>
-      </div>
-    </div>
-  );
-}
+import Home from '@/pages/home';
+import { ContractorsPage, ExpeditersPage } from '@/pages/solutions';
+import Features from '@/pages/features';
+import How from '@/pages/how';
+import About from '@/pages/about';
+import { DemoPage, SignupPage, ContactPage } from '@/pages/forms-pages';
+import { PrivacyPage, TermsPage } from '@/pages/legal';
 
 function Router() {
   return (
@@ -35,6 +28,16 @@ function Router() {
     <RoutedErrorBoundary>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/solutions/contractors" component={ContractorsPage} />
+        <Route path="/solutions/permit-expediters" component={ExpeditersPage} />
+        <Route path="/features" component={Features} />
+        <Route path="/how-it-works" component={How} />
+        <Route path="/about" component={About} />
+        <Route path="/demo" component={DemoPage} />
+        <Route path="/signup" component={SignupPage} />
+        <Route path="/contact" component={ContactPage} />
+        <Route path="/privacy" component={PrivacyPage} />
+        <Route path="/terms" component={TermsPage} />
         <Route component={NotFound} />
       </Switch>
     </RoutedErrorBoundary>

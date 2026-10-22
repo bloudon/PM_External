@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: inquiries
+    description: Public website inquiry operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,86 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /inquiries/demo:
+    post:
+      operationId: submitDemoRequest
+      tags: [inquiries]
+      summary: Submit a demo request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DemoRequestInput"
+      responses:
+        "201":
+          description: Demo request received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InquiryReceipt"
+        "400":
+          description: Invalid request
+  /inquiries/access:
+    post:
+      operationId: submitAccessRequest
+      tags: [inquiries]
+      summary: Submit a company access request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccessRequestInput"
+      responses:
+        "201":
+          description: Access request received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InquiryReceipt"
+        "400":
+          description: Invalid request
+  /inquiries/contact:
+    post:
+      operationId: submitContactRequest
+      tags: [inquiries]
+      summary: Submit a general contact request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactRequestInput"
+      responses:
+        "201":
+          description: Contact request received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InquiryReceipt"
+        "400":
+          description: Invalid request
+  /marketing-events:
+    post:
+      operationId: trackMarketingEvent
+      tags: [inquiries]
+      summary: Record a privacy-safe marketing event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MarketingEventInput"
+      responses:
+        "202":
+          description: Event recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InquiryReceipt"
+        "400":
+          description: Invalid event
 components:
   schemas:
     HealthStatus:
@@ -33,4 +115,121 @@ components:
           type: string
       required:
         - status
+    BusinessType:
+      type: string
+      enum:
+        - contractor
+        - permit_expeditor
+    DemoRequestInput:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        workEmail:
+          type: string
+          format: email
+        companyName:
+          type: string
+          minLength: 2
+          maxLength: 160
+        businessType:
+          $ref: "#/components/schemas/BusinessType"
+        challenge:
+          type: string
+          maxLength: 2000
+      required:
+        - fullName
+        - workEmail
+        - companyName
+        - businessType
+    AccessRequestInput:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        workEmail:
+          type: string
+          format: email
+        companyName:
+          type: string
+          minLength: 2
+          maxLength: 160
+        businessType:
+          $ref: "#/components/schemas/BusinessType"
+        phone:
+          type: string
+          maxLength: 40
+        monthlyPermitVolume:
+          type: string
+          enum:
+            - 1-10
+            - 11-25
+            - 26-50
+            - 51-100
+            - 100+
+            - not_sure
+      required:
+        - fullName
+        - workEmail
+        - companyName
+        - businessType
+        - monthlyPermitVolume
+    ContactRequestInput:
+      type: object
+      properties:
+        fullName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        workEmail:
+          type: string
+          format: email
+        companyName:
+          type: string
+          maxLength: 160
+        message:
+          type: string
+          minLength: 10
+          maxLength: 3000
+      required:
+        - fullName
+        - workEmail
+        - message
+    InquiryReceipt:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+            - received
+        message:
+          type: string
+      required:
+        - id
+        - status
+        - message
+    MarketingEventInput:
+      type: object
+      properties:
+        eventName:
+          type: string
+          enum:
+            - cta_get_started
+            - cta_request_demo
+            - cta_sign_in
+            - signup_submitted
+            - demo_submitted
+            - contact_submitted
+        path:
+          type: string
+          maxLength: 200
+      required:
+        - eventName
+        - path
 
