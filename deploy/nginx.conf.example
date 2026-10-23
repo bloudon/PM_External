@@ -1,8 +1,13 @@
+# Standalone marketing-site host. Install as a separate Nginx site file;
+# do not replace the existing permitflow.conf app/pflow configuration.
+# This root matches the administrator shell prompt ~/apps/PM_External.
+# Confirm with `pwd` on the VPS and update the absolute path if different.
 server {
     listen 80;
+    listen [::]:80;
     server_name permitsmanager.com www.permitsmanager.com;
 
-    root /srv/permitsmanager/artifacts/permits-manager-site/dist/public;
+    root /home/administrator/apps/PM_External/artifacts/permits-manager-site/dist/public;
     index index.html;
 
     location /api/ {

@@ -1,0 +1,23 @@
+[Unit]
+Description=Permits Manager Marketing API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=administrator
+WorkingDirectory=/home/administrator/apps/PM_External
+EnvironmentFile=/etc/permitsmanager/marketing-api.env
+Environment=NODE_ENV=production
+# Replace /usr/bin/node with the absolute path from `command -v node` if needed.
+ExecStart=/usr/bin/node --enable-source-maps artifacts/api-server/dist/index.mjs
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target
