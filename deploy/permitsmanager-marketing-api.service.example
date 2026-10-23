@@ -1,5 +1,7 @@
 [Unit]
 Description=Permits Manager Marketing API
+# Optional: static pages do not need this service.
+# Current API is database-backed, not an SMTP handler. See deploy/README.md.
 After=network-online.target
 Wants=network-online.target
 
@@ -9,8 +11,10 @@ User=administrator
 WorkingDirectory=/home/administrator/apps/PM_External
 EnvironmentFile=/etc/permitsmanager/marketing-api.env
 Environment=NODE_ENV=production
-# Replace /usr/bin/node with the absolute path from `command -v node` if needed.
-ExecStart=/usr/bin/node --enable-source-maps artifacts/api-server/dist/index.mjs
+# Isolated Node path confirmed on this VPS. Check `command -v node` after
+# activating this project's nvm before installing; update if the version differs.
+# systemd does not source nvm or shell startup files. Do not use system Node 20.
+ExecStart=/home/administrator/.local/share/pm-external-nvm/versions/node/v24.22.1/bin/node --enable-source-maps artifacts/api-server/dist/index.mjs
 Restart=on-failure
 RestartSec=5
 UMask=0077

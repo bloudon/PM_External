@@ -1,107 +1,251 @@
 # Ubuntu VPS deployment
 
-This repository is the source of truth. Build and run it on the Ubuntu VPS after pulling from Git; Replit is used for development and preview only. The marketing site has its own Nginx site file and API service. Do not replace or edit the existing `permitflow.conf` blocks for `app.permitsmanager.com` and `pflow.permitsmanager.com`.
+Replit is the development environment only. Push reviewed changes to Git, then pull and build them on the Ubuntu VPS.
 
-## Requirements and paths
+## Scope: static website first, SMTP forms separately
 
-- Ubuntu with Node.js 24, Corepack, pnpm, Git, Nginx, PostgreSQL, and `ss` from `iproute2`
-- A PostgreSQL database reachable by the API server
-- DNS for `permitsmanager.com` and, if used, `www.permitsmanager.com` pointed to this VPS
-- The checkout is expected at `~/apps/PM_External`. From the checkout, run `pwd` and use that absolute path in Nginx and systemd. The examples below assume `/home/administrator/apps/PM_External`.
+The public site consists of static HTML/CSS/JavaScript/images, with sign-in links to **https://app.permitsmanager.com**. Nginx serves these files directly; **no running Node service or PostgreSQL database is needed to display the site**. Node and pnpm are build tools.
 
-## Check port usage before installing the API
+Forms are intended to email submissions through SMTP, without database storage. Browsers cannot safely hold SMTP credentials, so email delivery needs a small server-side handler. **The repository's current API is still database-backed and does not send SMTP email. Do not start it as though SMTP delivery were implemented.** The default Nginx example returns an explicit JSON `503` for `/api/`, rather than falsely accepting submissions or returning the HTML page.
 
-Port `3000` is already used by `app.permitsmanager.com`; do not assign it to the marketing API. The most recent VPS check showed no listener on `5000`, but port usage can change. Recheck on the VPS before starting the service:
+Static pages can launch independently, but forms will not deliver messages until the SMTP handler is implemented and configured. A complete forms-enabled launch must verify real email delivery and visible failure handling. Do not advertise forms as working before then. Do not run database setup for the intended static/SMTP deployment. An empty marketing database created during earlier setup can remain unused; no deletion is required.
 
-```sh
+## Protect the other sites
+
+- Existing application: `app.permitsmanager.com`, upstream **127.0.0.1:3000**. Never use that port for this site.
+- Preserve all existing `permitflow.conf` blocks, certificates, maintenance-sentinel rules, and the `pflow.permitsmanager.com` HTTP default-server redirect.
+- Add one distinct marketing site file; do not replace `/etc/nginx/nginx.conf`, `permitflow.conf`, or other site files. Do not add `default_server`.
+- DNS for different hostnames can point to the same VPS IP. Nginx selects the matching `server_name`; each HTTPS hostname also needs certificate coverage.
+- Do not upgrade system Node, restart other application services, or run a blanket PM2 restart.
+
+## 1. First clone, or later pull
+
+Run as `administrator`, not root. The confirmed checkout path is:
+
+```text
+/home/administrator/apps/PM_External
+```
+
+For the first clone, the directory must be empty:
+
+```bash
+mkdir -p /home/administrator/apps/PM_External
+cd /home/administrator/apps/PM_External
+git clone --branch main https://github.com/bloudon/PM_External.git .
+git status --short --branch
+pwd
+```
+
+If it has already been cloned, do **not** clone again:
+
+```bash
+cd /home/administrator/apps/PM_External
+git status --short --branch
+# Stop if there are local changes; review them rather than resetting them.
+git pull --ff-only origin main
+```
+
+Push the desired commits from Replit before pulling. Never use `git reset --hard` to resolve an unexpected dirty checkout. Keep credentials out of remote URLs and Git.
+
+## 2. Activate the isolated build tools
+
+This workspace has locked dependencies requiring Node 22+; use **Node 24**. The shared VPS's `/usr/bin/node` is Node 20 and must remain unchanged.
+
+The following isolated installation has already been verified on this VPS. In each new deployment shell, activate it explicitly:
+
+```bash
+export NVM_DIR="$HOME/.local/share/pm-external-nvm"
+. "$NVM_DIR/nvm.sh"
+nvm use 24
+node --version
+command -v node
+pnpm --version
+```
+
+Confirmed versions were Node `v24.22.1` and pnpm `10.34.5`. Do not follow package-manager upgrade notices during deployment.
+
+For a fresh server without that installation, first check `node --version`, `command -v node`, `pnpm --version`, and existing version managers. If needed, install nvm only in this dedicated directory, without modifying shell startup files or system Node:
+
+```bash
+export NVM_DIR="$HOME/.local/share/pm-external-nvm"
+mkdir -p "$NVM_DIR"
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh \
+  -o /tmp/pm-external-install-nvm.sh &&
+PROFILE=/dev/null bash /tmp/pm-external-install-nvm.sh &&
+. "$NVM_DIR/nvm.sh" &&
+nvm install 24 &&
+nvm use 24
+```
+
+This sets a default only inside the dedicated nvm directory, not in the system installation. Do not uninstall existing global packages. If pnpm is missing, install the confirmed pnpm version only under the activated isolated Node (`npm install --global pnpm@10.34.5`, without sudo); do not run global `corepack enable` against `/usr/bin`.
+
+## 3. Build the static site
+
+From the checkout, with Node 24 active:
+
+```bash
+pnpm install --frozen-lockfile &&
+BASE_PATH=/ NODE_ENV=production VITE_APP_URL=https://app.permitsmanager.com \
+  pnpm --filter @workspace/permits-manager-site run build &&
+test -s artifacts/permits-manager-site/dist/public/index.html &&
+echo "Website build confirmed"
+```
+
+Output: `/home/administrator/apps/PM_External/artifacts/permits-manager-site/dist/public`.
+
+Do not use Vite's development or preview server as the production web server. The static launch does not need an API build, API port, systemd unit, PostgreSQL, or database schema changes.
+
+## 4. Add the separate static Nginx host
+
+First inspect the active configuration locally on the VPS:
+
+```bash
+sudo nginx -T
+sudo ss -ltnp
+```
+
+Do not paste private keys or credentials from any configuration. Check for existing `permitsmanager.com` / `www.permitsmanager.com` server names before adding duplicates. The supplied configuration shows the existing app/pflow blocks; leave them intact.
+
+`deploy/nginx.conf.example` is a complete, **HTTP-only static site file** using the confirmed absolute document root. The optional `deploy/nginx-api-location.conf.example` is only a location snippet, not a complete site file.
+
+Before installing, verify the usual Ubuntu Nginx worker can traverse the checkout and read the built page:
+
+```bash
+sudo -u www-data test -r /home/administrator/apps/PM_External/artifacts/permits-manager-site/dist/public/index.html \
+  && echo "Nginx can read the website"
+```
+
+If this fails, stop and inspect `namei -l /home/administrator/apps/PM_External/artifacts/permits-manager-site/dist/public/index.html`. Grant only the needed directory traversal and static-file read access (or use a dedicated static directory and adjust the root). Do not make the checkout world-writable or expose private configuration files.
+
+On this VPS, site files are loaded from `/etc/nginx/sites-enabled`. Install a **new** file only if absent, keeping a dated backup of the existing Nginx directory:
+
+```bash
+if sudo test -e /etc/nginx/sites-enabled/permitsmanager-site.conf ||
+   sudo test -L /etc/nginx/sites-enabled/permitsmanager-site.conf; then
+  echo "Marketing site file already exists; stop and inspect it. Do not overwrite it."
+else
+  sudo cp -a /etc/nginx "/etc/nginx.backup.$(date +%Y%m%d-%H%M%S)" &&
+  sudo install -o root -g root -m 0644 deploy/nginx.conf.example \
+    /etc/nginx/sites-enabled/permitsmanager-site.conf &&
+  sudo nginx -t &&
+  sudo systemctl reload nginx
+fi
+```
+
+If `nginx -t` fails, do not reload. Inspect the error and correct only the newly added marketing file. Existing running workers continue using their previous configuration. Never replace the existing app configuration to make a test pass.
+
+### HTTP checks before TLS
+
+On the VPS:
+
+```bash
+curl --fail --silent --show-error -o /dev/null \
+  -H 'Host: permitsmanager.com' http://127.0.0.1/
+curl --fail --silent --show-error -o /dev/null \
+  -H 'Host: www.permitsmanager.com' http://127.0.0.1/
+# Expected: HTTP 503 and JSON explaining forms are not configured yet.
+curl -i -H 'Host: permitsmanager.com' http://127.0.0.1/api/healthz
+```
+
+Also check a real built asset from `dist/public/assets`, a client-side page route, and the sign-in link in a browser. The sign-in destination must remain `https://app.permitsmanager.com`. Confirm the existing app and pflow redirect still respond as before; do not trigger their maintenance switch.
+
+### TLS after DNS is ready
+
+Verify both A and any AAAA records point to this VPS, and public HTTP for both names works. Only then, if Certbot is installed and those are the intended domains:
+
+```bash
+sudo certbot --nginx -d permitsmanager.com -d www.permitsmanager.com
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+If `www` is not configured, do not request its certificate yet. Keep the existing application and pflow certificates untouched. Certbot may add TLS directives to the marketing file: **never overwrite that active file afterward with the HTTP-only template**.
+
+Verify public HTTPS for the marketing hostnames, the application, and the pflow redirect. Static-site deployment needs no new publicly exposed application port.
+
+## 5. Later updates
+
+Use the same isolated Node activation as above. Before changing a working site, keep a copy of the existing static output **outside Git** for recovery:
+
+```bash
+cd /home/administrator/apps/PM_External
+git status --short --branch
+# Stop on local modifications.
+mkdir -p "$HOME/deployment-backups"
+cp -a artifacts/permits-manager-site/dist/public \
+  "$HOME/deployment-backups/pm-external-public-$(date +%Y%m%d-%H%M%S)" &&
+git pull --ff-only origin main &&
+pnpm install --frozen-lockfile &&
+BASE_PATH=/ NODE_ENV=production VITE_APP_URL=https://app.permitsmanager.com \
+  pnpm --filter @workspace/permits-manager-site run build &&
+test -s artifacts/permits-manager-site/dist/public/index.html
+```
+
+Vite rebuilds the output directory in place; a brief incomplete-assets window is possible. Schedule updates appropriately. For higher availability later, build into versioned release directories and switch a static-root symlink atomically.
+
+For static-file updates, **no Nginx reload or Node restart is needed**. Repeat the HTTP/HTTPS and sign-in checks. If a build fails, restore the backup static files before serving the release. Do not overwrite TLS configuration during updates.
+
+## Optional: a future SMTP form service
+
+**Not a static-launch prerequisite. The current API must first be changed from database persistence to SMTP email delivery.** Its current inquiry and marketing-event endpoints still use PostgreSQL. Merely adding SMTP environment variables will not make it send email.
+
+Keep SMTP credentials server-side in `/etc/permitsmanager/marketing-api.env`, owned by root with mode `0600`, inside a root-owned directory with mode `0750`. Do not put secrets in `VITE_*` variables, Git, browser code, terminal arguments, or chat. Future SMTP configuration must match the implemented handler; no SMTP variable contract is assumed here.
+
+The optional service template establishes the isolation needed for that handler:
+
+- Name: `permitsmanager-marketing-api.service`.
+- Working directory: `/home/administrator/apps/PM_External`.
+- User: `administrator`, not root.
+- Environment file: `/etc/permitsmanager/marketing-api.env`.
+- Listener: `HOST=127.0.0.1`, `PORT=5000`.
+- Explicit isolated Node binary; no shell startup or system Node dependency.
+- Enabled at boot, restarted on failure, read-only filesystem hardening.
+
+`deploy/marketing-api.env.example` describes the **legacy database-backed API**, not working SMTP configuration. Do not overwrite an existing protected environment file, and do not enable the current database API for an SMTP-only launch.
+
+### Port preflight and service installation, once SMTP is implemented
+
+```bash
 sudo ss -ltnp
 sh deploy/check-api-port.sh 5000
 ```
 
-The check exits unsuccessfully if the selected TCP port is already listening. If `5000` is occupied, choose a free port and use it consistently in all three places: the port-check command, `PORT` in the protected API environment file, and the Nginx `proxy_pass` target. The API example binds to `127.0.0.1`, so it is reachable through local Nginx but not directly on the public interface.
+The checker rejects invalid ports, reserved application port `3000`, inspection failures, and ports with TCP listeners. It is a preflight, not a reservation. If `5000` is busy, choose another verified free port and update all of:
 
-The check is a preflight, not a reservation: another service could claim the port afterward. Confirm the systemd service starts and inspect listeners again after startup.
+1. The preflight command.
+2. `PORT` in the protected environment file.
+3. The upstream port in `deploy/nginx-api-location.conf.example` when copied into the live marketing host.
 
-## Pull and build
+Build the revised API with `pnpm --filter @workspace/api-server run build`. Verify `command -v node` with the isolated version active. Check the service template's absolute `ExecStart` binary exists and matches it; systemd does not source nvm. The template currently matches the verified Node `v24.22.1` installation.
 
-Push the desired commits from Replit first. On the VPS, run as the checkout owner (not as root):
+After implementing SMTP, preparing its protected configuration, and checking the port:
 
-```sh
-cd ~/apps/PM_External
-git status --short --branch
-git pull --ff-only origin main
-corepack enable
-pnpm install --frozen-lockfile
-VITE_APP_URL=https://app.permitsmanager.com pnpm --filter @workspace/permits-manager-site run build
-pnpm --filter @workspace/api-server run build
-```
-
-The static site is written to `artifacts/permits-manager-site/dist/public`. The site build keeps sign-in pointed at `https://app.permitsmanager.com`.
-
-## Prepare the database
-
-Create a PostgreSQL database and a restricted application user. Before the first production run, review the Drizzle schema changes and back up the database, then apply the schema using the repository's database tooling:
-
-```sh
-DATABASE_URL='postgresql://USER:PASSWORD@HOST:5432/DATABASE' pnpm --filter @workspace/db run push
-```
-
-Do not use the example credentials below or commit real credentials.
-
-## Install the API service
-
-The examples run the API as the non-root checkout owner `administrator`. Confirm that account owns or can read the checkout, and that `command -v node` matches the path used in the service file. If the VPS uses a different account, checkout path, or Node installation path, update the example before installing it.
-
-Create a root-readable environment file, replace the placeholder database URL, and install the service:
-
-```sh
-sudo install -d -o root -g root -m 0750 /etc/permitsmanager
-if sudo test -e /etc/permitsmanager/marketing-api.env; then
-  echo "Keeping the existing environment file; edit it with sudoedit if needed."
+```bash
+if sudo test -e /etc/systemd/system/permitsmanager-marketing-api.service ||
+   sudo test -L /etc/systemd/system/permitsmanager-marketing-api.service; then
+  echo "Service already exists; stop and inspect it rather than overwriting it."
 else
-  sudo install -o root -g root -m 0600 deploy/marketing-api.env.example /etc/permitsmanager/marketing-api.env
-fi
-sudoedit /etc/permitsmanager/marketing-api.env
-if sudo test -e /etc/systemd/system/permitsmanager-marketing-api.service; then
-  echo "Service unit already exists; inspect it before making changes."
-else
-  sudo install -o root -g root -m 0644 deploy/permitsmanager-marketing-api.service.example /etc/systemd/system/permitsmanager-marketing-api.service
-  sudo systemctl daemon-reload
+  sudo install -o root -g root -m 0644 \
+    deploy/permitsmanager-marketing-api.service.example \
+    /etc/systemd/system/permitsmanager-marketing-api.service &&
+  sudo systemd-analyze verify /etc/systemd/system/permitsmanager-marketing-api.service &&
+  sh deploy/check-api-port.sh 5000 &&
+  sudo systemctl daemon-reload &&
   sudo systemctl enable --now permitsmanager-marketing-api
 fi
-sudo systemctl status permitsmanager-marketing-api
+sudo systemctl status permitsmanager-marketing-api --no-pager
 sudo journalctl -u permitsmanager-marketing-api -n 50 --no-pager
+curl --fail --silent --show-error http://127.0.0.1:5000/api/healthz
+sudo ss -ltnp 'sport = :5000'
 ```
 
-The environment example sets `HOST=127.0.0.1` and `PORT=5000`. The API supports the optional `HOST` setting; without it, existing development behavior is unchanged. The service has a unique name and does not reuse the existing application's port or service.
+The listener must be on `127.0.0.1:5000`, not `0.0.0.0:5000`. Inspect logs locally and redact secrets before sharing them. Health alone does not prove email delivery: test a real form, receipt at the destination mailbox, and an SMTP failure before declaring forms ready.
 
-The API stores demo, access, and contact requests in `marketing_inquiries`. Privacy-safe CTA and successful-submission events are stored in `marketing_events`; event records contain only an event name, page path, and timestamp, not submitted form contents.
+Back up the active marketing Nginx file, then replace **only its `/api/` location** with `deploy/nginx-api-location.conf.example`. Preserve any Certbot TLS additions. Run `sudo nginx -t && sudo systemctl reload nginx`; verify the proxied health endpoint and real form delivery. Do not install the location snippet directly in `sites-enabled`.
 
-## Install the marketing Nginx site
+Later API updates: rebuild, then `sudo systemctl restart permitsmanager-marketing-api`, and repeat local/proxied health and form checks. Restart **only this service**. Nginx reload is needed only for configuration changes, always after `nginx -t`.
 
-`deploy/nginx.conf.example` is a standalone marketing-site server block. It does not include `default_server` and must be installed as a new file, not copied over `permitflow.conf`. Confirm its `root` path matches `pwd` from the checkout. Ensure the Nginx worker can traverse the checkout directories and read the built `index.html`; do not make the whole checkout world-writable.
+## Legacy database mode: not part of this launch
 
-On this VPS, the current Nginx setup loads files from `sites-enabled`. Install the new file only if that destination does not already exist:
+Only if database persistence is explicitly requested again: use a separate database and restricted login, review the schema, and back up production data before applying changes. Do not point marketing schema tools at the existing application's database. Load `DATABASE_URL` from a protected environment file; do not paste credentials into a command or shell history.
 
-```sh
-if sudo test -e /etc/nginx/sites-enabled/permitsmanager-site.conf; then
-  echo "Site file already exists; inspect it rather than overwriting it."
-else
-  sudo install -o root -g root -m 0644 deploy/nginx.conf.example /etc/nginx/sites-enabled/permitsmanager-site.conf
-  sudo nginx -t && sudo systemctl reload nginx
-fi
-```
-
-On a standard Ubuntu Nginx install, confirm the worker can read the built page with `sudo -u www-data test -r /home/administrator/apps/PM_External/artifacts/permits-manager-site/dist/public/index.html`. Adjust the path if `pwd` reported a different checkout location.
-
-The explicit `server_name` routes the marketing domains to this new file; the existing `pflow.permitsmanager.com` HTTP default and app configuration remain untouched. Once both DNS names resolve to this VPS and HTTP works, request HTTPS certificates:
-
-```sh
-sudo certbot --nginx -d permitsmanager.com -d www.permitsmanager.com
-```
-
-Certbot may modify the active Nginx file to add TLS. Do not overwrite that active file with the HTTP-only example after Certbot runs.
-
-## Updating
-
-Pull reviewed Git changes with `git pull --ff-only origin main`, install frozen dependencies, rebuild the site and API, and restart only `permitsmanager-marketing-api`. Before reloading Nginx, run `sudo nginx -t`. Do not restart the existing application service or replace its Nginx blocks.
+The legacy schema command is `pnpm --filter @workspace/db run push`. Review proposed changes and never use `push-force` to bypass warnings. The intended static/SMTP launch does not require this command.
