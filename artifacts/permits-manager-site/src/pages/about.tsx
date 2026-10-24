@@ -21,7 +21,6 @@ export default function About() {
           <Reveal delay={0.08}><div className="space-y-5 text-lg text-foreground/85">
             <p>Permits Manager was built by permit expediters. The product reflects the practical demands of the work: many projects at once, different requirements in every jurisdiction, documents that have to be right, and inspections that need follow-up.</p>
             <p>It is made for contractors who manage permitting with their own teams, and for the professional firms who manage it on behalf of others.</p>
-            <p className="text-sm text-muted-foreground border-l-4 border-accent pl-4">Detailed team biographies and company history will be added once approved.</p>
           </div></Reveal>
         </div>
       </Section>

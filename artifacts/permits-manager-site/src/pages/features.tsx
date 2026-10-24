@@ -17,17 +17,18 @@ export default function Features() {
         </nav>
       </div></section>
       {groups.map((g, i) => {
-        const M = mocks[g.mock];
+        const M = g.mock ? mocks[g.mock] : null;
         return (
           <Section key={g.t} id={`g${i}`} className={i % 2 ? 'bg-muted' : ''}>
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <Reveal className={i % 2 ? 'lg:order-2' : ''}>
+            <div className={`grid gap-12 items-center ${M ? 'lg:grid-cols-2' : ''}`}>
+              <Reveal className={M && i % 2 ? 'lg:order-2' : ''}>
                 <span className="font-mono text-accent font-semibold">0{i + 1}</span>
                 <h2 className="font-display text-3xl md:text-4xl font-bold mt-2">{g.t}</h2>
                 <p className="mt-3 text-lg text-foreground/80 max-w-lg">{g.d}</p>
+                <p className="mt-3 text-foreground/75 max-w-lg">{g.more}</p>
                 <ul className="mt-6 grid gap-2">{g.items.map((x) => <li key={x} className="flex gap-3 border-t border-foreground/20 pt-2"><span className="mt-2 h-2 w-2 bg-primary shrink-0" aria-hidden />{x}</li>)}</ul>
               </Reveal>
-              <Reveal delay={0.08}><M /></Reveal>
+              {M && <Reveal delay={0.08}><M /></Reveal>}
             </div>
           </Section>
         );

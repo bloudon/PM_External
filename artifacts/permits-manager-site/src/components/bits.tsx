@@ -22,8 +22,9 @@ const variants = {
 };
 export function Cta({ href, children, variant = 'primary', arrow, id }: { href: string; children: ReactNode; variant?: keyof typeof variants; arrow?: boolean; id: string }) {
   const sendEvent = useMarketingEvent();
+  const path = href.split(/[?#]/)[0];
   const eventName: MarketingEventName | undefined =
-    href === '/signup' ? 'cta_get_started' : href === '/demo' ? 'cta_request_demo' : undefined;
+    path === '/signup' ? 'cta_get_started' : path === '/demo' ? 'cta_request_demo' : undefined;
   return (
     <Link href={href} onClick={() => eventName && sendEvent(eventName)} className={`${base} ${variants[variant]}`} data-testid={`link-${id}`}>
       {children}

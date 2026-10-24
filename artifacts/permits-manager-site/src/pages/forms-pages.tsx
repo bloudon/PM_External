@@ -26,14 +26,14 @@ function FormPage({ eyebrow, h1, lead, aside, children, title, desc }: { eyebrow
 }
 
 export const DemoPage = () => (
-  <FormPage title="Request a Demo | Permits Manager" desc="Request a walkthrough of Permits Manager for your contracting or permit expediting business." eyebrow="Request a demo" h1="See it against your own permitting work."
-    lead="Tell us who you are and what is hard about permitting today. We will follow up to arrange a walkthrough."
+  <FormPage title="Request a Demo | Permits Manager" desc="Request a walkthrough of Permits Manager for your contracting or permit expediting business." eyebrow="Request a demo" h1="See how Permits Manager fits your workflow."
+    lead="Tell us about your company and permitting challenge. We will follow up to arrange a walkthrough covering projects and permits, documents, assignments, inspections, and fees and billing as they apply to your business."
     aside={<>Already a customer? <a href={APP_URL} className="font-semibold underline">Sign In</a>.</>}><DemoForm /></FormPage>
 );
 export const SignupPage = () => (
-  <FormPage title="Get Started | Permits Manager" desc="Request access to Permits Manager for your contractor or permit expediting company." eyebrow="Get started" h1="Request access for your company."
-    lead="Choose your business type and tell us a little about your operation. Our team will follow up with the next step."
-    aside="This is a request, not instant account creation. Both business types use the same product."><SignupForm /></FormPage>
+  <FormPage title="Get Started | Permits Manager" desc="Request access to Permits Manager for your contractor or permit expediting company." eyebrow="Get started" h1="Get started with Permits Manager."
+    lead="Tell us about your company. We’ll follow up to discuss your workflow and help you get started."
+    aside="Setup is assisted, so we start with a conversation about how your team works. Prefer to see the product first? Request a demo."><SignupForm /></FormPage>
 );
 export const ContactPage = () => (
   <FormPage title="Contact | Permits Manager" desc="Send a general inquiry to the Permits Manager team." eyebrow="Contact" h1="Ask us anything."

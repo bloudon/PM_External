@@ -1,1 +1,2 @@
 - [Shared VPS deployment](shared-vps.md) — keep this site isolated from the user's other VPS-hosted projects.
+- [Marketing content approvals](marketing-content.md) — genuine screenshot crops are approved; the owner will update Privacy and Terms later.

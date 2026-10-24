@@ -1,9 +1,10 @@
 import { useState, useEffect, type ReactNode } from 'react';
-import { Link, useLocation } from 'wouter';
+import { Link, useLocation, useSearch } from 'wouter';
 import { ChevronDown, Menu, X, LogIn } from 'lucide-react';
 import { APP_URL, LOGO } from '@/lib/config';
 import { useMarketingEvent } from '@/lib/marketing';
 import { Cta } from '@/components/bits';
+import { audienceQuery } from '@/lib/audience';
 
 const SHOW_PRICING = false; // enable once pricing and packaging are approved
 const solutions = [
@@ -30,6 +31,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [sol, setSol] = useState(false);
   const [loc] = useLocation();
+  const q = audienceQuery(loc, useSearch());
   useEffect(() => { setOpen(false); setSol(false); }, [loc]);
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
@@ -65,7 +67,7 @@ export function Header() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <SignIn />
-          <div className="hidden sm:block"><Cta href="/signup" id="header-get-started">Get Started</Cta></div>
+          <div className="hidden sm:flex items-center gap-2"><Cta href={`/signup${q}`} variant="ghost" id="header-get-started">Get Started</Cta><Cta href={`/demo${q}`} id="header-demo">Request a Demo</Cta></div>
           <button className="lg:hidden p-2 border border-foreground/30 rounded-md" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}
             onClick={() => setOpen(!open)} data-testid="button-menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -78,7 +80,7 @@ export function Header() {
           {solutions.map((s) => <Link key={s.href} href={s.href} className="py-2 font-semibold">{s.t}</Link>)}
           <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground pt-2">Explore</p>
           {nav.map((n) => <Link key={n.href} href={n.href} className="py-2 font-semibold">{n.t}</Link>)}
-          <div className="pt-3"><Cta href="/signup" id="mobile-get-started">Get Started</Cta></div>
+          <div className="pt-3 flex flex-wrap gap-3"><Cta href={`/demo${q}`} id="mobile-demo">Request a Demo</Cta><Cta href={`/signup${q}`} variant="ghost" id="mobile-get-started">Get Started</Cta></div>
         </nav>
       )}
     </header>
@@ -87,6 +89,8 @@ export function Header() {
 
 export function Footer() {
   const sendEvent = useMarketingEvent();
+  const [loc] = useLocation();
+  const q = audienceQuery(loc, useSearch());
   const col = 'grid gap-2 text-sm';
   const h = 'font-mono text-[11px] uppercase tracking-widest text-[hsl(200_88%_62%)] mb-3';
   return (
@@ -100,7 +104,7 @@ export function Footer() {
           <Link href="/features">Features</Link><Link href="/how-it-works">How It Works</Link><Link href="/about">About</Link></div></div>
         <div><p className={h}>Solutions</p><div className={col}>
           <Link href="/solutions/contractors">For Contractors</Link><Link href="/solutions/permit-expediters">For Permit Expediters</Link>
-          <Link href="/demo" data-testid="link-footer-demo">Request a Demo</Link><Link href="/signup">Get Started</Link></div></div>
+          <Link href={`/demo${q}`} data-testid="link-footer-demo">Request a Demo</Link><Link href={`/signup${q}`}>Get Started</Link></div></div>
         <div><p className={h}>Company</p><div className={col}>
           <a href={APP_URL} onClick={() => sendEvent('cta_sign_in')}>Sign In</a><Link href="/contact">Contact</Link>
           <Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div></div>

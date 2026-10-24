@@ -8,7 +8,7 @@ type Mk = keyof typeof mocks;
 interface Cfg {
   title: string; desc: string; eyebrow: string; h1: string; lead: string; who: string[];
   challenges: { t: string; d: string }[]; caps: { t: string; d: string }[];
-  walk: { t: string; d: string; m: Mk }[]; examples?: { t: string; d: string }[]; hero: Mk; cta: string;
+  walk: { t: string; d: string; m?: Mk }[]; examples?: { t: string; d: string }[]; hero: Mk; cta: string; bt: 'contractor' | 'permit_expeditor';
 }
 
 const contractors: Cfg = {
@@ -31,15 +31,16 @@ const contractors: Cfg = {
     { t: 'Inspection follow-up', d: 'Track inspections and the work that remains after each one.' },
   ],
   examples: [
-    { t: 'Specialty contractors', d: 'Electrical, mechanical, plumbing and other trades can keep trade permits and inspections tied to each job and the person handling them.' },
-    { t: 'General contractors', d: 'Keep the permits across a project, and across the trades involved, in one view with clear owners.' },
+    { t: 'Roofing and window contractors', d: 'Track permit status and inspection follow-up across recurring jobs.' },
+    { t: 'HVAC, electrical and plumbing teams', d: 'Keep trade permits, documents and responsibilities connected to each job.' },
+    { t: 'General contractors', d: 'Coordinate multiple permits and inspections across concurrent projects, with clear owners.' },
   ],
   walk: [
-    { t: 'See every project and permit', d: 'A working view of status by project, jurisdiction and owner.', m: 'dashboard' },
-    { t: 'Keep the paperwork with the permit', d: 'Documents organized where the team expects to find them.', m: 'documents' },
+    { t: 'See what needs attention', d: 'Dashboard alerts highlight pending paperwork, corrections and expired permits alongside active project totals.', m: 'dashboard' },
+    { t: 'Track permit status by jurisdiction', d: 'Permit statuses and the jurisdictions they sit in, in one list.', m: 'permits' },
     { t: 'Follow every inspection', d: 'Upcoming inspections and what needs attention.', m: 'inspections' },
   ],
-  hero: 'dashboard', cta: 'Bring your permitting operation into one workspace.',
+  bt: 'contractor', hero: 'dashboard', cta: 'Bring your permitting operation into one workspace.',
 };
 
 const expediters: Cfg = {
@@ -63,11 +64,11 @@ const expediters: Cfg = {
     { t: 'QuickBooks Online exports', d: 'Export billing information using supported QuickBooks Online exports.' },
   ],
   walk: [
-    { t: 'Manage every client', d: 'All active permits across your contractor clients.', m: 'dashboard' },
-    { t: 'Assign your staff', d: 'Clear owners for each follow-up.', m: 'assign' },
-    { t: 'Bill from the same record', d: 'Expenses, client rates and invoice drafts with QuickBooks Online export.', m: 'fees' },
+    { t: 'Review the work needing attention', d: 'Dashboard alerts and totals help you see active work and outstanding follow-up.', m: 'dashboard' },
+    { t: 'Assign your staff', d: 'Clear owners for each follow-up.' },
+    { t: 'Bill from the same record', d: 'Record fees and reimbursable expenses, apply contractor-specific pricing and use supported QuickBooks Online exports. Ask for a demo to confirm scope for your setup.' },
   ],
-  hero: 'fees', cta: 'Bring your expediting operation into one workspace.',
+  bt: 'permit_expeditor', hero: 'dashboard', cta: 'Bring your expediting operation into one workspace.',
 };
 
 function SolutionPage({ c }: { c: Cfg }) {
@@ -81,7 +82,7 @@ function SolutionPage({ c }: { c: Cfg }) {
             <Reveal><Eyebrow>{c.eyebrow}</Eyebrow><h1 className="font-display text-4xl md:text-6xl font-extrabold leading-[1.02]">{c.h1}</h1></Reveal>
             <Reveal delay={0.08}><p className="mt-5 text-lg max-w-xl text-foreground/85">{c.lead}</p>
               <ul className="mt-5 flex flex-wrap gap-2">{c.who.map((w) => <li key={w} className="border border-foreground/40 bg-card px-3 py-1 text-sm font-medium">{w}</li>)}</ul>
-              <div className="mt-8 flex flex-wrap gap-4"><Cta href="/signup" id="solution-get-started" arrow>Get Started</Cta><Cta href="/demo" variant="ghost" id="solution-demo">Request a Demo</Cta></div></Reveal>
+              <div className="mt-8 flex flex-wrap gap-4"><Cta href={`/demo?businessType=${c.bt}`} id="solution-demo" arrow>Request a Demo</Cta><Cta href={`/signup?businessType=${c.bt}`} variant="ghost" id="solution-get-started">Get Started</Cta></div></Reveal>
           </div>
           <Reveal delay={0.12}><Hero /></Reveal>
         </div>
@@ -105,7 +106,7 @@ function SolutionPage({ c }: { c: Cfg }) {
           ))}
         </div>
         {c.examples && (
-          <div className="mt-10 grid md:grid-cols-2 gap-6">
+          <div className="mt-10 grid md:grid-cols-3 gap-6">
             {c.examples.map((x) => <Reveal key={x.t}><div className="border border-background/30 p-6"><p className="font-mono text-xs uppercase tracking-widest text-[hsl(200_88%_62%)]">Example</p><h3 className="font-display text-xl font-bold mt-2">{x.t}</h3><p className="mt-2 text-background/75">{x.d}</p></div></Reveal>)}
           </div>
         )}
@@ -114,17 +115,17 @@ function SolutionPage({ c }: { c: Cfg }) {
         <Reveal><Eyebrow>Walkthrough</Eyebrow><H2>See the workflow in the interface.</H2></Reveal>
         <div className="mt-14 grid gap-20">
           {c.walk.map((w, i) => {
-            const M = mocks[w.m];
+            const M = w.m ? mocks[w.m] : null;
             return (
-              <div key={w.t} className="grid lg:grid-cols-2 gap-10 items-center">
+              <div key={w.t} className={`grid gap-10 items-center ${M ? 'lg:grid-cols-2' : ''}`}>
                 <Reveal className={i % 2 ? 'lg:order-2' : ''}><span className="font-mono text-accent font-semibold">Step 0{i + 1}</span><h3 className="font-display text-3xl font-bold mt-2">{w.t}</h3><p className="mt-3 text-lg text-foreground/80 max-w-md">{w.d}</p></Reveal>
-                <Reveal delay={0.08}><M /></Reveal>
+                {M && <Reveal delay={0.08}><M /></Reveal>}
               </div>
             );
           })}
         </div>
       </Section>
-      <FinalCta title={c.cta} />
+      <FinalCta title={c.cta} bt={c.bt} />
     </Shell>
   );
 }

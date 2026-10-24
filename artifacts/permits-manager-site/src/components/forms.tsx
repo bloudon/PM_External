@@ -1,11 +1,20 @@
-import { useState, useId, type ReactNode, type FormEvent } from 'react';
-import { Link } from 'wouter';
+import { useState, useId, useEffect, type ReactNode, type FormEvent } from 'react';
+import { Link, useSearch } from 'wouter';
+import { parseBt } from '@/lib/audience';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useSubmitDemoRequest, useSubmitAccessRequest, useSubmitContactRequest } from '@workspace/api-client-react';
 import { APP_URL } from '@/lib/config';
 import { useMarketingEvent } from '@/lib/marketing';
 
 type BT = 'contractor' | 'permit_expeditor';
+type BTSel = BT | '';
+
+function useAudience() {
+  const search = useSearch();
+  const [bt, setBt] = useState<BTSel>(() => parseBt(search));
+  useEffect(() => { setBt(parseBt(search)); }, [search]);
+  return [bt, setBt] as const;
+}
 type Vol = '1-10' | '11-25' | '26-50' | '51-100' | '100+' | 'not_sure';
 
 const input = 'w-full bg-card border-2 border-input rounded-md px-3 py-2.5 text-[15px] focus:border-primary';
@@ -67,9 +76,10 @@ export function DemoForm() {
   const id = useId();
   const m = useSubmitDemoRequest();
   const sendEvent = useMarketingEvent();
-  const [bt, setBt] = useState<BT>('contractor');
+  const [bt, setBt] = useAudience();
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!bt) return;
     const f = new FormData(e.currentTarget);
     const challenge = String(f.get('challenge') || '').trim();
     m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), companyName: String(f.get('company')).trim(), businessType: bt, ...(challenge ? { challenge } : {}) } },
@@ -81,7 +91,7 @@ export function DemoForm() {
       <Field label="Full name" htmlFor={id + 'n'}><input id={id + 'n'} name="name" required minLength={2} maxLength={120} autoComplete="name" className={input} data-testid="input-name" /></Field>
       <Field label="Work email" htmlFor={id + 'e'}><input id={id + 'e'} name="email" type="email" required autoComplete="email" className={input} data-testid="input-email" /></Field>
       <Field label="Company" htmlFor={id + 'c'}><input id={id + 'c'} name="company" required minLength={2} maxLength={160} autoComplete="organization" className={input} data-testid="input-company" /></Field>
-      <Field label="Business type" htmlFor={id + 'b'}><select id={id + 'b'} value={bt} onChange={(e) => setBt(e.target.value as BT)} className={input} data-testid="select-business-type">{typeOptions}</select></Field>
+      <Field label="Business type" htmlFor={id + 'b'}><select id={id + 'b'} required value={bt} onChange={(e) => setBt(e.target.value as BTSel)} className={input} data-testid="select-business-type"><option value="" disabled>Select business type</option>{typeOptions}</select></Field>
       <Field label="Current permitting challenge" optional htmlFor={id + 'x'} hint="Describe it in your own words. Please leave out sensitive information.">
         <textarea id={id + 'x'} name="challenge" rows={4} maxLength={2000} className={input} data-testid="input-challenge" />
       </Field>
@@ -118,17 +128,18 @@ export function ContactForm() {
 }
 
 const intro: Record<BT, string> = {
-  contractor: 'Tell us about your company and the permitting your team handles in-house. We will review your request and follow up with next steps for getting your company set up.',
-  permit_expeditor: 'Tell us about your expediting company and the volume you handle for clients. We will review your request and follow up with next steps for getting your company set up.',
+  contractor: 'Tell us about your company and the permitting your team handles in-house. We will follow up to discuss your workflow and help you get started.',
+  permit_expeditor: 'Tell us about your expediting company and the volume you handle for clients. We will follow up to discuss your workflow and help you get started.',
 };
 
 export function SignupForm() {
   const id = useId();
   const m = useSubmitAccessRequest();
   const sendEvent = useMarketingEvent();
-  const [bt, setBt] = useState<BT>('contractor');
+  const [bt, setBt] = useAudience();
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!bt) return;
     const f = new FormData(e.currentTarget);
     const phone = String(f.get('phone') || '').trim();
     m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), companyName: String(f.get('company')).trim(), businessType: bt, monthlyPermitVolume: String(f.get('volume')) as Vol, ...(phone ? { phone } : {}) } },
@@ -149,12 +160,12 @@ export function SignupForm() {
         <div className="grid sm:grid-cols-2 gap-3" role="radiogroup">
           {opts.map(([v, t]) => (
             <label key={v} className={`cursor-pointer border-2 p-4 font-semibold text-sm flex items-center gap-3 has-[:focus-visible]:outline has-[:focus-visible]:outline-[3px] has-[:focus-visible]:outline-ring ${bt === v ? 'border-primary bg-[hsl(240_100%_96%)]' : 'border-input bg-card'}`}>
-              <input type="radio" name="bt" value={v} checked={bt === v} onChange={() => setBt(v)} className="accent-[#2626FF] h-4 w-4" data-testid={`radio-${v}`} />
+              <input type="radio" name="bt" required value={v} checked={bt === v} onChange={() => setBt(v)} className="accent-[#2626FF] h-4 w-4" data-testid={`radio-${v}`} />
               {t}
             </label>
           ))}
         </div>
-        <p className="mt-3 text-sm text-foreground/80" data-testid="text-signup-intro">{intro[bt]}</p>
+        <p className="mt-3 text-sm text-foreground/80" data-testid="text-signup-intro">{bt ? intro[bt] : 'Choose the option that fits your company. You can change it at any time before sending.'}</p>
       </fieldset>
       <div className="grid sm:grid-cols-2 gap-5">
         <Field label="Full name" htmlFor={id + 'n'}><input id={id + 'n'} name="name" required minLength={2} maxLength={120} autoComplete="name" className={input} data-testid="input-name" /></Field>
