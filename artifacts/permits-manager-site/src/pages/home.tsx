@@ -5,6 +5,7 @@ import { Seo } from '@/components/seo';
 import { Shell } from '@/components/layout';
 import { Cta, Eyebrow, H2, Reveal, Section } from '@/components/bits';
 import { DashboardMock } from '@/components/product-ui';
+import { JobsitePhoto } from '@/components/jobsite-photo';
 import { groups, steps } from '@/lib/content';
 
 const benefits = [
@@ -117,7 +118,20 @@ export default function Home() {
             <p className="mt-6 text-lg text-foreground/85 max-w-xl">Permits Manager grew out of permit expediting work: juggling jurisdictions, missing documents, inspection windows and client requests. The product reflects that daily reality, for in-house teams and expediting firms alike.</p>
             <div className="mt-8"><Cta href="/about" variant="ghost" id="home-about" arrow>Read the story</Cta></div>
           </Reveal>
-          <Reveal delay={0.1}><DashboardMock label /></Reveal>
+          <Reveal delay={0.1}>
+            <figure className="m-0">
+              <div className="overflow-hidden border border-foreground/20 shadow-[8px_8px_0_0_hsl(var(--primary))]">
+                <JobsitePhoto
+                  trade="roofing"
+                  alt="A worker fastening shingles on a residential roof."
+                  sizes="(min-width: 1024px) 600px, 100vw"
+                />
+              </div>
+              <figcaption className="mt-4 font-mono text-[11px] text-muted-foreground">
+                Illustrative roofing work. Photo: Pexels.
+              </figcaption>
+            </figure>
+          </Reveal>
         </div>
       </Section>
 

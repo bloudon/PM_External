@@ -2,13 +2,16 @@ import { Seo } from '@/components/seo';
 import { Shell } from '@/components/layout';
 import { Cta, Eyebrow, H2, Reveal, Section } from '@/components/bits';
 import { mocks } from '@/components/product-ui';
+import { JobsitePhoto } from '@/components/jobsite-photo';
 import { FinalCta } from '@/pages/home';
 
 type Mk = keyof typeof mocks;
 interface Cfg {
   title: string; desc: string; eyebrow: string; h1: string; lead: string; who: string[];
   challenges: { t: string; d: string }[]; caps: { t: string; d: string }[];
-  walk: { t: string; d: string; m?: Mk }[]; examples?: { t: string; d: string }[]; hero: Mk; cta: string; bt: 'contractor' | 'permit_expeditor';
+  walk: { t: string; d: string; m?: Mk }[];
+  examples?: { t: string; d: string; photo: 'windows' | 'electrical' | 'fire-protection' | 'plumbing'; alt: string }[];
+  hero: Mk; cta: string; bt: 'contractor' | 'permit_expeditor';
 }
 
 const contractors: Cfg = {
@@ -31,9 +34,10 @@ const contractors: Cfg = {
     { t: 'Inspection follow-up', d: 'Track inspections and the work that remains after each one.' },
   ],
   examples: [
-    { t: 'Roofing and window contractors', d: 'Track permit status and inspection follow-up across recurring jobs.' },
-    { t: 'HVAC, electrical and plumbing teams', d: 'Keep trade permits, documents and responsibilities connected to each job.' },
-    { t: 'General contractors', d: 'Coordinate multiple permits and inspections across concurrent projects, with clear owners.' },
+    { t: 'Roofing and window contractors', d: 'Track permit status and inspection follow-up across recurring roof and window jobs.', photo: 'windows', alt: 'Window installer working on a frame from inside a building.' },
+    { t: 'HVAC and electrical teams', d: 'Keep trade permits, documents and responsibilities connected to each job.', photo: 'electrical', alt: 'Technician working inside an electrical control panel.' },
+    { t: 'Fire-protection contractors', d: 'Keep approvals and inspection follow-up visible for specialty work.', photo: 'fire-protection', alt: 'Fire-sprinkler piping, valves and pressure gauges mounted on a wall.' },
+    { t: 'Plumbing and general contractors', d: 'Coordinate permits and inspections across active jobs, with clear owners.', photo: 'plumbing', alt: 'Hands fitting a metal pipe beneath a fixture.' },
   ],
   walk: [
     { t: 'See what needs attention', d: 'Dashboard alerts highlight pending paperwork, corrections and expired permits alongside active project totals.', m: 'dashboard' },
@@ -106,8 +110,22 @@ function SolutionPage({ c }: { c: Cfg }) {
           ))}
         </div>
         {c.examples && (
-          <div className="mt-10 grid md:grid-cols-3 gap-6">
-            {c.examples.map((x) => <Reveal key={x.t}><div className="border border-background/30 p-6"><p className="font-mono text-xs uppercase tracking-widest text-[hsl(200_88%_62%)]">Example</p><h3 className="font-display text-xl font-bold mt-2">{x.t}</h3><p className="mt-2 text-background/75">{x.d}</p></div></Reveal>)}
+          <div className="mt-12">
+            <p className="font-mono text-xs uppercase tracking-widest text-[hsl(200_88%_62%)]">Illustrative job types</p>
+            <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {c.examples.map((x) => (
+                <Reveal key={x.t} className="h-full">
+                  <figure className="m-0 h-full overflow-hidden border border-background/30 bg-[hsl(236_55%_10%)]">
+                    <JobsitePhoto trade={x.photo} alt={x.alt} sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" />
+                    <figcaption className="p-5">
+                      <h3 className="font-display text-xl font-bold">{x.t}</h3>
+                      <p className="mt-2 text-sm text-background/75">{x.d}</p>
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              ))}
+            </div>
+            <p className="mt-4 text-xs text-background/70">Photos illustrate construction work, not Permits Manager customer projects.</p>
           </div>
         )}
       </Section>
