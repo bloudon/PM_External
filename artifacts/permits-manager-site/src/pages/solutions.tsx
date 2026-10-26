@@ -49,7 +49,7 @@ const contractors: Cfg = {
 
 const expediters: Cfg = {
   title: 'Software for permit expediting companies | Permits Manager',
-  desc: 'Manage multiple contractor clients, requests, staff responsibilities, contractor-specific pricing, reimbursable expenses, invoicing and QuickBooks Online exports.',
+  desc: 'Manage contractor clients, requests, assignments, pricing and invoicing. Import existing contractors and bring in accounts and fees from QuickBooks.',
   eyebrow: 'For Permit Expediters', h1: 'Run a permit expediting business from one workspace.',
   lead: 'Built by expediters, for firms juggling many clients, many jurisdictions and a team to keep aligned.',
   who: ['Business owners', 'Expediters', 'Coordinators', 'Accounting staff'],
@@ -60,17 +60,17 @@ const expediters: Cfg = {
     { t: 'Billing is its own project', d: 'Fees, reimbursable expenses and client-specific rates have to reach an invoice accurately.' },
   ],
   caps: [
-    { t: 'Multiple clients', d: 'Manage projects and permits for many contractors together.' },
+    { t: 'Multiple clients', d: 'Import your existing contractors and manage their projects and permits together.' },
     { t: 'Contractor requests', d: 'Keep client requests tied to the work they affect.' },
     { t: 'Staff responsibilities', d: 'Assign work and see who has the next step.' },
     { t: 'Contractor-specific pricing', d: 'Apply the pricing that fits each contractor.' },
     { t: 'Reimbursable expenses and invoicing', d: 'Record expenses and carry them through to client invoices.' },
-    { t: 'QuickBooks Online exports', d: 'Export billing information using supported QuickBooks Online exports.' },
+    { t: 'QuickBooks setup and exports', d: 'QuickBooks can pull in your accounts and fees for a quick, painless setup. Supported QuickBooks Online exports are also available for billing information.' },
   ],
   walk: [
     { t: 'Review the work needing attention', d: 'Dashboard alerts and totals help you see active work and outstanding follow-up.', m: 'dashboard' },
     { t: 'Assign your staff', d: 'Clear owners for each follow-up.' },
-    { t: 'Bill from the same record', d: 'Record fees and reimbursable expenses, apply contractor-specific pricing and use supported QuickBooks Online exports. Ask for a demo to confirm scope for your setup.' },
+    { t: 'Bill from the same record', d: 'Bring in your accounts and fees from QuickBooks for a quick, painless setup. Record fees and reimbursable expenses, apply contractor-specific pricing and use supported QuickBooks Online exports for billing information.' },
   ],
   bt: 'permit_expeditor', hero: 'dashboard', cta: 'Bring your expediting operation into one workspace.',
 };

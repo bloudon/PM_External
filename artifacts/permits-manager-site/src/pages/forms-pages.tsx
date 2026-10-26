@@ -32,8 +32,8 @@ export const DemoPage = () => (
 );
 export const SignupPage = () => (
   <FormPage title="Get Started | Permits Manager" desc="Request access to Permits Manager for your contractor or permit expediting company." eyebrow="Get started" h1="Get started with Permits Manager."
-    lead="Tell us about your company. We’ll follow up to discuss your workflow and help you get started."
-    aside="Setup is assisted, so we start with a conversation about how your team works. Prefer to see the product first? Request a demo."><SignupForm /></FormPage>
+    lead="Tell us about your company. We’ll follow up with a guided walkthrough to get you up and running fast."
+    aside="You can import your existing contractors, and QuickBooks can pull in your accounts and fees for a quick, painless setup. Prefer to see the product first? Request a demo."><SignupForm /></FormPage>
 );
 export const ContactPage = () => (
   <FormPage title="Contact | Permits Manager" desc="Send a general inquiry to the Permits Manager team." eyebrow="Contact" h1="Ask us anything."

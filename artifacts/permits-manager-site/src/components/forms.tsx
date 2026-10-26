@@ -128,8 +128,8 @@ export function ContactForm() {
 }
 
 const intro: Record<BT, string> = {
-  contractor: 'Tell us about your company and the permitting your team handles in-house. We will follow up to discuss your workflow and help you get started.',
-  permit_expeditor: 'Tell us about your expediting company and the volume you handle for clients. We will follow up to discuss your workflow and help you get started.',
+  contractor: 'Tell us about your company and the permitting your team handles in-house. We will follow up with a guided walkthrough to get you up and running fast.',
+  permit_expeditor: 'Tell us about your expediting company and the volume you handle for clients. We will follow up with a guided walkthrough to get you up and running fast.',
 };
 
 export function SignupForm() {
@@ -148,7 +148,7 @@ export function SignupForm() {
   if (m.isSuccess)
     return (
       <Success title="Access request received" message={m.data.message}>
-        <p className="mt-3 text-sm text-foreground/80">The saved request is the first step in company onboarding. No login, account, or invitation has been created. Employees joining an existing company need an invitation from their administrator.</p>
+        <p className="mt-3 text-sm text-foreground/80">The saved request is the first step toward your guided walkthrough to get you up and running fast. No login, account, or invitation has been created. Employees joining an existing company need an invitation from their administrator.</p>
         <p className="mt-2 text-sm text-muted-foreground">Reference {m.data.id}</p>
       </Success>
     );

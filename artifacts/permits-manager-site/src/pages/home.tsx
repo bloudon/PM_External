@@ -16,9 +16,9 @@ const benefits = [
 const faqs = [
   { q: 'Is Permits Manager software or a filing service?', a: 'It is software. Your team, or your expediting firm, uses it to manage projects, permits, inspections, documents and assignments. It does not file permits on your behalf.' },
   { q: 'Which jurisdictions does it support?', a: 'You record the jurisdiction on each project and permit, so you can track work in the jurisdictions you actually deal with.' },
-  { q: 'Can we bring in existing contractor records?', a: 'During your demo, we can review the records you want to bring over and confirm the available options for your setup.' },
-  { q: 'How does setup work?', a: 'Setup is assisted. Request a demo or access, tell us about your company, and we will follow up to discuss your workflow and help you get started.' },
-  { q: 'What does the QuickBooks support cover?', a: 'The product offers supported QuickBooks Online exports for billing information. Ask in a demo and we will confirm whether that fits your accounting setup.' },
+  { q: 'Can we bring in existing contractor records?', a: 'Yes, you can import your existing contractors.' },
+  { q: 'How does setup work?', a: 'We offer a guided walkthrough to get you up and running fast. Request a demo or access, tell us about your company, and we will follow up to help you get started.' },
+  { q: 'What does the QuickBooks support cover?', a: 'QuickBooks can pull in your accounts and fees for a quick, painless setup. Supported QuickBooks Online exports are also available for billing information.' },
   { q: 'How do I get pricing?', a: 'Request a demo and ask for a pricing discussion. We will talk through your team and what you need.' },
 ];
 const icons = [ClipboardList, FolderOpen, UserCheck, Receipt];
