@@ -5,6 +5,7 @@ import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useSubmitDemoRequest, useSubmitAccessRequest, useSubmitContactRequest } from '@workspace/api-client-react';
 import { APP_URL } from '@/lib/config';
 import { useMarketingEvent } from '@/lib/marketing';
+import { buildDemoDetails, DEMO_DETAILS_LIMIT, permitProcesses } from '@/lib/demo-details';
 
 type BT = 'contractor' | 'permit_expeditor';
 type BTSel = BT | '';
@@ -77,12 +78,19 @@ export function DemoForm() {
   const m = useSubmitDemoRequest();
   const sendEvent = useMarketingEvent();
   const [bt, setBt] = useAudience();
+  const [process, setProcess] = useState('');
+  const [challenge, setChallenge] = useState('');
+  const details = buildDemoDetails(process, challenge);
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!bt) return;
     const f = new FormData(e.currentTarget);
-    const challenge = String(f.get('challenge') || '').trim();
-    m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), companyName: String(f.get('company')).trim(), businessType: bt, ...(challenge ? { challenge } : {}) } },
+    const submittedDetails = buildDemoDetails(String(f.get('process') || ''), String(f.get('challenge') || ''));
+    if (!submittedDetails.ok) {
+      (e.currentTarget.elements.namedItem('challenge') as HTMLTextAreaElement)?.focus();
+      return;
+    }
+    m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), companyName: String(f.get('company')).trim(), businessType: bt, ...(submittedDetails.challenge ? { challenge: submittedDetails.challenge } : {}) } },
       { onSuccess: () => sendEvent('demo_submitted') });
   };
   if (m.isSuccess) return <Success title="Demo request received" message={m.data.message}><p className="mt-3 text-sm text-muted-foreground">Reference {m.data.id}</p></Success>;
@@ -92,9 +100,16 @@ export function DemoForm() {
       <Field label="Work email" htmlFor={id + 'e'}><input id={id + 'e'} name="email" type="email" required autoComplete="email" className={input} data-testid="input-email" /></Field>
       <Field label="Company" htmlFor={id + 'c'}><input id={id + 'c'} name="company" required minLength={2} maxLength={160} autoComplete="organization" className={input} data-testid="input-company" /></Field>
       <Field label="Business type" htmlFor={id + 'b'}><select id={id + 'b'} required value={bt} onChange={(e) => setBt(e.target.value as BTSel)} className={input} data-testid="select-business-type"><option value="" disabled>Select business type</option>{typeOptions}</select></Field>
-      <Field label="Current permitting challenge" optional htmlFor={id + 'x'} hint="Describe it in your own words. Please leave out sensitive information.">
-        <textarea id={id + 'x'} name="challenge" rows={4} maxLength={2000} className={input} data-testid="input-challenge" />
+      <Field label="How do you manage permits today?" optional htmlFor={id + 'p'}>
+        <select id={id + 'p'} name="process" value={process} onChange={(e) => setProcess(e.target.value)} className={input} data-testid="select-current-process">
+          <option value="">Select an option (optional)</option>
+          {permitProcesses.map((option) => <option key={option} value={option}>{option}</option>)}
+        </select>
       </Field>
+      <Field label="Current permitting challenge" optional htmlFor={id + 'x'} hint="Describe it in your own words. Please leave out sensitive information. Your current-process answer and challenge share a 2,000-character limit.">
+        <textarea id={id + 'x'} name="challenge" rows={4} maxLength={DEMO_DETAILS_LIMIT} value={challenge} onChange={(e) => setChallenge(e.target.value)} aria-invalid={!details.ok} aria-describedby={!details.ok ? id + 'details-error' : undefined} className={input} data-testid="input-challenge" />
+      </Field>
+      {!details.ok && <p id={id + 'details-error'} role="alert" className="text-sm text-destructive" data-testid="error-demo-details">{details.error}</p>}
       {m.isError && <ErrorBox />}
       <Submit pending={m.isPending}>Request a Demo</Submit>
     </form>

@@ -1,6 +1,6 @@
 import { Link, useLocation, useSearch } from 'wouter';
 import { audienceQuery } from '@/lib/audience';
-import { Eye, Link2, Users, ArrowUpRight, ClipboardList, FolderOpen, UserCheck, Receipt } from 'lucide-react';
+import { Eye, Link2, Users, ArrowUpRight, ClipboardList, FolderOpen, UserCheck, Receipt, CheckSquare } from 'lucide-react';
 import { Seo } from '@/components/seo';
 import { Shell } from '@/components/layout';
 import { Cta, Eyebrow, H2, Reveal, Section } from '@/components/bits';
@@ -21,46 +21,51 @@ const faqs = [
   { q: 'What does the QuickBooks support cover?', a: 'QuickBooks can pull in your accounts and fees for a quick, painless setup. Supported QuickBooks Online exports are also available for billing information.' },
   { q: 'How do I get pricing?', a: 'Request a demo and ask for a pricing discussion. We will talk through your team and what you need.' },
 ];
+const fit = [
+  'Your team handles permitting regularly across multiple active jobs.',
+  'Status updates, documents, and follow-up are spread across spreadsheets and inboxes.',
+  'More than one person needs to know what is happening next.',
+];
 const icons = [ClipboardList, FolderOpen, UserCheck, Receipt];
 
 export default function Home() {
   return (
     <Shell>
-      <Seo title="Permits Manager | Permitting operations software" description="Manage projects, permits, inspections, documents and team responsibilities in one workspace. Built by permit expediters for contractors and expediting firms." />
+      <Seo title="Permits Manager | Permit management software for contractors and expediters" description="Manage projects, permits, inspections, documents and team responsibilities in one workspace. Built by permit expediters for contractors and expediting firms." />
       <section className="grid-paper border-b border-border overflow-hidden">
-        <div className="mx-auto max-w-7xl px-5 md:px-8 pt-14 pb-16 md:pt-24 md:pb-28 grid lg:grid-cols-[1fr_1.15fr] gap-12 items-center">
+        <div className="mx-auto max-w-7xl px-5 md:px-8 pt-10 pb-10 md:pt-14 md:pb-14 grid lg:grid-cols-[1fr_1fr] gap-10 items-center">
           <div>
-            <Reveal><Eyebrow>Permitting operations platform</Eyebrow></Reveal>
-            <Reveal delay={0.05}><h1 className="font-display text-5xl md:text-7xl font-extrabold leading-[0.98]">Take control of your <span className="text-primary">permitting</span> operation.</h1></Reveal>
-            <Reveal delay={0.12}><p className="mt-6 text-lg max-w-xl text-foreground/85">Manage projects, permits, inspections, documents, and team responsibilities in one workspace. Built by permit expediters for contractors managing permitting in-house and the professionals who manage it for others.</p></Reveal>
-            <Reveal delay={0.18}><div className="mt-8 flex flex-wrap gap-4"><Cta href="/demo" id="hero-demo" arrow>Request a Demo</Cta><Cta href="/signup" variant="ghost" id="hero-get-started">Get Started</Cta></div></Reveal>
+            <Reveal><Eyebrow>Permit management software for contractors &amp; expediters</Eyebrow></Reveal>
+            <Reveal delay={0.05}><h1 data-testid="text-hero-title" className="font-display text-4xl md:text-6xl font-extrabold leading-[1.02]">Keep every <span className="text-primary">permit</span>—and every next step—in view.</h1></Reveal>
+            <Reveal delay={0.12}><p className="mt-5 text-lg max-w-xl text-foreground/85">Manage permits across active jobs and jurisdictions with clear assignments, connected documents, and inspection follow-up. Built for contractors handling permitting in-house and firms managing it for their clients.</p></Reveal>
+            <Reveal delay={0.18}><div className="mt-7 flex flex-wrap gap-4"><Cta href="/demo" id="hero-demo" arrow>Request a Demo</Cta><Cta href="/features" variant="ghost" id="hero-features">Explore Features</Cta></div>
+              <p data-testid="text-hero-origin" className="mt-5 font-mono text-xs uppercase tracking-[0.14em] text-foreground/70">Built from real permit-expediting experience.</p></Reveal>
           </div>
-          <Reveal delay={0.2} className="lg:-mr-24"><DashboardMock />
-            <ul className="mt-5 grid gap-1 text-sm font-semibold sm:grid-cols-3">
-              <li className="border-t-2 border-primary pt-2">See work needing attention</li>
-              <li className="border-t-2 border-primary pt-2">Track active permits and inspections</li>
-              <li className="border-t-2 border-primary pt-2">Check active project totals</li>
-            </ul></Reveal>
+          <Reveal delay={0.2}><DashboardMock /></Reveal>
         </div>
       </section>
 
-      <Section>
-        <Reveal><Eyebrow>Choose your path</Eyebrow><H2>Built for in-house permitting teams and permit expediting firms.</H2></Reveal>
-        <div className="mt-10 grid md:grid-cols-2 gap-6">
+      <section className="border-b border-border">
+        <div className="mx-auto max-w-7xl px-5 md:px-8 py-10 md:py-12">
+          <Reveal><Eyebrow>Choose your path</Eyebrow><h2 className="font-display text-2xl md:text-3xl font-bold leading-tight max-w-3xl">Built for in-house permitting teams and permit expediting firms.</h2></Reveal>
+          <div className="mt-7 grid md:grid-cols-2 gap-6">
           {[
             { h: '/solutions/contractors', t: 'Manage Permitting In-House', d: 'For permit coordinators, office managers, operations and project managers at specialty and general contractors.', c: 'bg-card' },
             { h: '/solutions/permit-expediters', t: 'Run a Permit Expediting Business', d: 'For owners, expediters, coordinators and accounting staff managing permits for multiple contractor clients.', c: 'bg-primary text-primary-foreground' },
           ].map((a, i) => (
             <Reveal key={a.h} delay={i * 0.08}>
-              <Link href={a.h} data-testid={`card-audience-${i}`} className={`group block h-full border-2 border-foreground p-7 md:p-10 shadow-[6px_6px_0_0_hsl(var(--foreground))] transition-transform hover:-translate-y-1 ${a.c}`}>
-                <ArrowUpRight className="h-8 w-8 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden />
-                <h3 className="font-display text-3xl font-bold mt-10">{a.t}</h3>
-                <p className={`mt-3 ${i ? 'text-primary-foreground/90' : 'text-foreground/80'}`}>{a.d}</p>
+              <Link href={a.h} data-testid={`card-audience-${i}`} className={`group flex h-full items-start justify-between gap-6 border-2 border-foreground p-6 md:p-8 shadow-[6px_6px_0_0_hsl(var(--foreground))] transition-transform hover:-translate-y-1 ${a.c}`}>
+                <div>
+                  <h3 className="font-display text-2xl md:text-3xl font-bold">{a.t}</h3>
+                  <p className={`mt-3 ${i ? 'text-primary-foreground/90' : 'text-foreground/80'}`}>{a.d}</p>
+                </div>
+                <ArrowUpRight className="h-8 w-8 shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden />
               </Link>
             </Reveal>
           ))}
+          </div>
         </div>
-      </Section>
+      </section>
 
       <Section dark>
         <Reveal><Eyebrow dark>Core benefits</Eyebrow><H2 dark>Less chasing. More clarity on every permit.</H2></Reveal>
@@ -132,6 +137,24 @@ export default function Home() {
               </figcaption>
             </figure>
           </Reveal>
+        </div>
+      </Section>
+
+      <Section id="fit">
+        <div className="grid lg:grid-cols-[0.8fr_1.2fr] gap-10">
+          <Reveal><Eyebrow>Is this a fit?</Eyebrow><H2>You will likely recognize at least one of these.</H2>
+            <p className="mt-5 text-foreground/80 max-w-md">If these situations sound familiar, request a demo to see how Permits Manager fits your team’s recurring permitting work.</p></Reveal>
+          <ul className="border-t-2 border-foreground">
+            {fit.map((f, i) => (
+              <Reveal key={f} delay={i * 0.06}>
+                <li data-testid={`text-fit-${i}`} className="list-none flex gap-5 items-baseline border-b border-foreground/30 py-5">
+                  <CheckSquare className="h-5 w-5 shrink-0 text-primary translate-y-0.5" aria-hidden />
+                  <span className="font-display text-xl md:text-2xl font-bold">{f}</span>
+                </li>
+              </Reveal>
+            ))}
+            <Reveal><div className="pt-6"><Cta href="/demo" id="fit-demo" arrow>Request a Demo</Cta></div></Reveal>
+          </ul>
         </div>
       </Section>
 
