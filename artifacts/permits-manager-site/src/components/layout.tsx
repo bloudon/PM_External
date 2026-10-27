@@ -1,7 +1,8 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { Link, useLocation, useSearch } from 'wouter';
 import { ChevronDown, Menu, X, LogIn } from 'lucide-react';
-import { APP_URL, LOGO } from '@/lib/config';
+import { APP_URL } from '@/lib/config';
+import { BrandLogo } from '@/components/brand-logo';
 import { useMarketingEvent } from '@/lib/marketing';
 import { Cta } from '@/components/bits';
 import { audienceQuery } from '@/lib/audience';
@@ -21,8 +22,8 @@ function SignIn({ className = '' }: { className?: string }) {
   const sendEvent = useMarketingEvent();
   return (
     <a href={APP_URL} onClick={() => sendEvent('cta_sign_in')} data-testid="link-sign-in"
-      className={`inline-flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-md border border-foreground/30 hover:bg-secondary ${className}`}>
-      <LogIn className="h-4 w-4" aria-hidden /> Sign In
+      className={`inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold px-2 sm:px-3 py-2 rounded-md border border-foreground/30 hover:bg-secondary ${className}`}>
+      <LogIn className="hidden sm:block h-4 w-4" aria-hidden /> Sign In
     </a>
   );
 }
@@ -36,11 +37,11 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:bg-card focus:p-2">Skip to content</a>
-      <div className="mx-auto max-w-7xl px-5 md:px-8 h-16 flex items-center gap-6">
+      <div className="mx-auto max-w-7xl px-4 sm:px-5 md:px-8 h-16 flex items-center gap-2 xl:gap-6">
         <Link href="/" aria-label="Permits Manager home" data-testid="link-home" className="shrink-0">
-          <img src={LOGO} alt="Permits Manager" className="h-11 w-auto" />
+          <BrandLogo />
         </Link>
-        <nav className="hidden lg:flex items-center gap-1 ml-4" aria-label="Main">
+        <nav className="hidden xl:flex items-center gap-1" aria-label="Main">
           <div className="relative" onMouseLeave={() => setSol(false)}>
             <button aria-expanded={sol} aria-haspopup="true" onClick={() => setSol(!sol)} onMouseEnter={() => setSol(true)}
               className="flex items-center gap-1 px-3 py-2 text-sm font-medium rounded-md hover:bg-secondary" data-testid="button-solutions">
@@ -67,15 +68,15 @@ export function Header() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <SignIn />
-          <div className="hidden sm:flex items-center gap-2"><Cta href={`/signup${q}`} variant="ghost" id="header-get-started">Get Started</Cta><Cta href={`/demo${q}`} id="header-demo">Request a Demo</Cta></div>
-          <button className="lg:hidden p-2 border border-foreground/30 rounded-md" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}
+          <div className="hidden md:flex items-center gap-2"><Cta href={`/signup${q}`} variant="ghost" id="header-get-started">Get Started</Cta><Cta href={`/demo${q}`} id="header-demo">Request a Demo</Cta></div>
+          <button className="xl:hidden p-2 border border-foreground/30 rounded-md" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}
             onClick={() => setOpen(!open)} data-testid="button-menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
       {open && (
-        <nav className="lg:hidden border-t border-border bg-background px-5 py-4 grid gap-1" aria-label="Mobile">
+        <nav className="xl:hidden border-t border-border bg-background px-5 py-4 grid gap-1" aria-label="Mobile">
           <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground pt-1">Solutions</p>
           {solutions.map((s) => <Link key={s.href} href={s.href} className="py-2 font-semibold">{s.t}</Link>)}
           <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground pt-2">Explore</p>
@@ -95,9 +96,9 @@ export function Footer() {
   const h = 'font-mono text-[11px] uppercase tracking-widest text-[hsl(200_88%_62%)] mb-3';
   return (
     <footer className="ink-dark">
-      <div className="mx-auto max-w-7xl px-5 md:px-8 py-14 grid gap-10 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="mx-auto max-w-7xl px-5 md:px-8 py-14 grid gap-10 md:grid-cols-2 xl:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
-          <div className="inline-block bg-background p-2 rounded-md"><img src={LOGO} alt="Permits Manager" className="h-14 w-auto" /></div>
+          <BrandLogo dark />
           <p className="mt-4 text-sm max-w-xs text-background/75">Permitting operations software, built from permit expediting experience.</p>
         </div>
         <div><p className={h}>Product</p><div className={col}>

@@ -2,3 +2,4 @@
 export const APP_URL: string =
   (import.meta.env.VITE_APP_URL as string | undefined) || 'https://app.permitsmanager.com';
 export const LOGO = `${import.meta.env.BASE_URL}permits-manager-logo.png`;
+export const LOGO_MARK = `${import.meta.env.BASE_URL}permits-manager-mark.png`;
