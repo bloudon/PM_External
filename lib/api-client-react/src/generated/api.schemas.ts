@@ -5,6 +5,14 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export interface ApiError {
+  error: string;
+}
+
+export interface EmailReadiness {
+  emailConfigured: boolean;
+}
+
 export interface HealthStatus {
   status: string;
 }
@@ -110,4 +118,34 @@ export interface MarketingEventInput {
   /** @maxLength 200 */
   path: string;
 }
+
+/**
+ * Website origin not allowed
+ */
+export type OriginDeniedResponse = ApiError;
+
+/**
+ * Submission exceeds the 16KB body limit
+ */
+export type TooLargeResponse = ApiError;
+
+/**
+ * JSON content type required
+ */
+export type JsonRequiredResponse = ApiError;
+
+/**
+ * Submission limit reached; retry after the delay
+ */
+export type RateLimitedResponse = ApiError;
+
+/**
+ * SMTP acceptance could not be confirmed
+ */
+export type MailFailedResponse = ApiError;
+
+/**
+ * Mail configuration missing or invalid
+ */
+export type MailUnavailableResponse = ApiError;
 

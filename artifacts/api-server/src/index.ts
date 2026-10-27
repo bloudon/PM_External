@@ -11,11 +11,14 @@ if (!rawPort) {
 
 const port = Number(rawPort);
 
-if (Number.isNaN(port) || port <= 0) {
+if (!Number.isInteger(port) || port <= 0 || port > 65535) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
 const host = process.env["HOST"]?.trim();
+if (process.env.NODE_ENV === "production" && host !== "127.0.0.1") {
+  throw new Error("Production mail service requires HOST=127.0.0.1 behind Nginx.");
+}
 
 const onListen = () => {
   logger.info({ port, host }, "Server listening");

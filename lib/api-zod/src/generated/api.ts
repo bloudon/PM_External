@@ -18,6 +18,16 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
+ * Checks configuration presence and syntax only, not SMTP authentication or delivery.
+ * @summary Check mail configuration
+ */
+export const EmailReadinessResponse = zod.object({
+  "emailConfigured": zod.boolean()
+})
+
+
+/**
+ * Sends a plain-text email via SMTP2GO. No database storage. Success means SMTP acceptance, not guaranteed inbox delivery.
  * @summary Submit a demo request
  */
 export const submitDemoRequestBodyFullNameMin = 2;
@@ -46,6 +56,7 @@ export const SubmitDemoRequestResponse = zod.object({
 
 
 /**
+ * Emails an access request. No login, account or invitation is created and no database record is stored.
  * @summary Submit a company access request
  */
 export const submitAccessRequestBodyFullNameMin = 2;
@@ -75,6 +86,7 @@ export const SubmitAccessRequestResponse = zod.object({
 
 
 /**
+ * Emails a contact message without database storage. Success means SMTP acceptance, not guaranteed inbox delivery.
  * @summary Submit a general contact request
  */
 export const submitContactRequestBodyFullNameMin = 2;
@@ -102,7 +114,9 @@ export const SubmitContactRequestResponse = zod.object({
 
 
 /**
- * @summary Record a privacy-safe marketing event
+ * Tracking is retired. This endpoint never stores an event or sends email.
+ * @deprecated
+ * @summary Disabled marketing event endpoint
  */
 export const trackMarketingEventBodyPathMax = 200;
 
@@ -113,10 +127,6 @@ export const TrackMarketingEventBody = zod.object({
   "path": zod.string().max(trackMarketingEventBodyPathMax)
 })
 
-export const TrackMarketingEventResponse = zod.object({
-  "id": zod.number().int(),
-  "status": zod.enum(['received']),
-  "message": zod.string()
-})
+export const TrackMarketingEventResponse = zod.void()
 
 

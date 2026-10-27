@@ -26,11 +26,31 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /readyz:
+    get:
+      operationId: emailReadiness
+      tags: [health]
+      summary: Check mail configuration
+      description: Checks configuration presence and syntax only, not SMTP authentication or delivery.
+      responses:
+        "200":
+          description: Mail settings configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailReadiness"
+        "503":
+          description: Mail settings missing or invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailReadiness"
   /inquiries/demo:
     post:
       operationId: submitDemoRequest
       tags: [inquiries]
       summary: Submit a demo request
+      description: Sends a plain-text email via SMTP2GO. No database storage. Success means SMTP acceptance, not guaranteed inbox delivery.
       requestBody:
         required: true
         content:
@@ -39,18 +59,31 @@ paths:
               $ref: "#/components/schemas/DemoRequestInput"
       responses:
         "201":
-          description: Demo request received
+          description: Demo request accepted for email delivery
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/InquiryReceipt"
         "400":
           description: Invalid request
+        "403":
+          $ref: "#/components/responses/OriginDenied"
+        "413":
+          $ref: "#/components/responses/TooLarge"
+        "415":
+          $ref: "#/components/responses/JsonRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "502":
+          $ref: "#/components/responses/MailFailed"
+        "503":
+          $ref: "#/components/responses/MailUnavailable"
   /inquiries/access:
     post:
       operationId: submitAccessRequest
       tags: [inquiries]
       summary: Submit a company access request
+      description: Emails an access request. No login, account or invitation is created and no database record is stored.
       requestBody:
         required: true
         content:
@@ -59,18 +92,31 @@ paths:
               $ref: "#/components/schemas/AccessRequestInput"
       responses:
         "201":
-          description: Access request received
+          description: Access request accepted for email delivery
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/InquiryReceipt"
         "400":
           description: Invalid request
+        "403":
+          $ref: "#/components/responses/OriginDenied"
+        "413":
+          $ref: "#/components/responses/TooLarge"
+        "415":
+          $ref: "#/components/responses/JsonRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "502":
+          $ref: "#/components/responses/MailFailed"
+        "503":
+          $ref: "#/components/responses/MailUnavailable"
   /inquiries/contact:
     post:
       operationId: submitContactRequest
       tags: [inquiries]
       summary: Submit a general contact request
+      description: Emails a contact message without database storage. Success means SMTP acceptance, not guaranteed inbox delivery.
       requestBody:
         required: true
         content:
@@ -79,18 +125,32 @@ paths:
               $ref: "#/components/schemas/ContactRequestInput"
       responses:
         "201":
-          description: Contact request received
+          description: Contact message accepted for email delivery
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/InquiryReceipt"
         "400":
           description: Invalid request
+        "403":
+          $ref: "#/components/responses/OriginDenied"
+        "413":
+          $ref: "#/components/responses/TooLarge"
+        "415":
+          $ref: "#/components/responses/JsonRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+        "502":
+          $ref: "#/components/responses/MailFailed"
+        "503":
+          $ref: "#/components/responses/MailUnavailable"
   /marketing-events:
     post:
       operationId: trackMarketingEvent
       tags: [inquiries]
-      summary: Record a privacy-safe marketing event
+      summary: Disabled marketing event endpoint
+      deprecated: true
+      description: Tracking is retired. This endpoint never stores an event or sends email.
       requestBody:
         required: true
         content:
@@ -98,16 +158,59 @@ paths:
             schema:
               $ref: "#/components/schemas/MarketingEventInput"
       responses:
-        "202":
-          description: Event recorded
+        "410":
+          description: Marketing event tracking is disabled
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/InquiryReceipt"
-        "400":
-          description: Invalid event
+                $ref: "#/components/schemas/ApiError"
 components:
+  responses:
+    OriginDenied:
+      description: Website origin not allowed
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    TooLarge:
+      description: Submission exceeds the 16KB body limit
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    JsonRequired:
+      description: JSON content type required
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    RateLimited:
+      description: Submission limit reached; retry after the delay
+      headers:
+        Retry-After:
+          schema: { type: integer }
+          description: Seconds until retry is permitted
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    MailFailed:
+      description: SMTP acceptance could not be confirmed
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
+    MailUnavailable:
+      description: Mail configuration missing or invalid
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ApiError" }
   schemas:
+    ApiError:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+    EmailReadiness:
+      type: object
+      required: [emailConfigured]
+      properties:
+        emailConfigured: { type: boolean }
     HealthStatus:
       type: object
       properties:

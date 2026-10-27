@@ -1,7 +1,7 @@
 [Unit]
 Description=Permits Manager Marketing API
 # Optional: static pages do not need this service.
-# Current API is database-backed, not an SMTP handler. See deploy/README.md.
+# Sends form emails via SMTP2GO; no PostgreSQL is required.
 After=network-online.target
 Wants=network-online.target
 

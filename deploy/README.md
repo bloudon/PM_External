@@ -6,9 +6,9 @@ Replit is the development environment only. Push reviewed changes to Git, then p
 
 The public site consists of static HTML/CSS/JavaScript/images, with sign-in links to **https://app.permitsmanager.com**. Nginx serves these files directly; **no running Node service or PostgreSQL database is needed to display the site**. Node and pnpm are build tools.
 
-Forms are intended to email submissions through SMTP, without database storage. Browsers cannot safely hold SMTP credentials, so email delivery needs a small server-side handler. **The repository's current API is still database-backed and does not send SMTP email. Do not start it as though SMTP delivery were implemented.** The default Nginx example returns an explicit JSON `503` for `/api/`, rather than falsely accepting submissions or returning the HTML page.
+Forms use the separate SMTP2GO handler in `artifacts/api-server`, without database storage. Browsers never receive SMTP credentials. **The handler must be configured, started and verified on the VPS before forms can deliver email.** The default static Nginx example deliberately returns JSON `503` for `/api/`; enable the optional proxy only after following the mail-service section below.
 
-Static pages can launch independently, but forms will not deliver messages until the SMTP handler is implemented and configured. A complete forms-enabled launch must verify real email delivery and visible failure handling. Do not advertise forms as working before then. Do not run database setup for the intended static/SMTP deployment. An empty marketing database created during earlier setup can remain unused; no deletion is required.
+Static pages can launch independently. A complete forms-enabled launch must verify real email delivery and visible failure handling. Do not advertise forms as working before then. No database setup is needed. The earlier unused marketing database can remain untouched. Marketing-click tracking is disabled.
 
 ## Protect the other sites
 
@@ -184,13 +184,13 @@ Vite rebuilds the output directory in place; a brief incomplete-assets window is
 
 For static-file updates, **no Nginx reload or Node restart is needed**. Repeat the HTTP/HTTPS and sign-in checks. If a build fails, restore the backup static files before serving the release. Do not overwrite TLS configuration during updates.
 
-## Optional: a future SMTP form service
+## SMTP2GO form service
 
-**Not a static-launch prerequisite. The current API must first be changed from database persistence to SMTP email delivery.** Its current inquiry and marketing-event endpoints still use PostgreSQL. Merely adding SMTP environment variables will not make it send email.
+This service handles demo, company-access and contact forms. It sends plain-text emails through SMTP2GO, with mandatory STARTTLS on port 587 and certificate validation. From and To are server-controlled; the visitor's validated email is Reply-To. It never creates an application account or writes to PostgreSQL.
 
-Keep SMTP credentials server-side in `/etc/permitsmanager/marketing-api.env`, owned by root with mode `0600`, inside a root-owned directory with mode `0750`. Do not put secrets in `VITE_*` variables, Git, browser code, terminal arguments, or chat. Future SMTP configuration must match the implemented handler; no SMTP variable contract is assumed here.
+Keep SMTP credentials server-side in `/etc/permitsmanager/marketing-api.env`, owned by root with mode `0600`, inside a root-owned directory with mode `0750`. This protected file is the production equivalent of a server-side `.env`; systemd loads it, so no `.env` file is needed in the checkout. Never put secrets in `VITE_*`, `NEXT_PUBLIC_*`, Git, browser code, terminal arguments or chat.
 
-The optional service template establishes the isolation needed for that handler:
+The service template isolates the mail handler:
 
 - Name: `permitsmanager-marketing-api.service`.
 - Working directory: `/home/administrator/apps/PM_External`.
@@ -200,9 +200,57 @@ The optional service template establishes the isolation needed for that handler:
 - Explicit isolated Node binary; no shell startup or system Node dependency.
 - Enabled at boot, restarted on failure, read-only filesystem hardening.
 
-`deploy/marketing-api.env.example` describes the **legacy database-backed API**, not working SMTP configuration. Do not overwrite an existing protected environment file, and do not enable the current database API for an SMTP-only launch.
+### A. Pull and build, without changing system Node
 
-### Port preflight and service installation, once SMTP is implemented
+Push the reviewed changes from development to Git first. On the VPS, inspect `git status` and stop if there are local changes; do not reset or discard them.
+
+```bash
+cd /home/administrator/apps/PM_External &&
+git status --short --branch
+```
+
+Once the working tree is clean:
+
+```bash
+cd /home/administrator/apps/PM_External &&
+git pull --ff-only origin main &&
+export NVM_DIR="$HOME/.local/share/pm-external-nvm" &&
+. "$NVM_DIR/nvm.sh" --no-use &&
+nvm use 24 &&
+pnpm install --frozen-lockfile &&
+pnpm --filter @workspace/api-server run build &&
+BASE_PATH=/ NODE_ENV=production VITE_APP_URL=https://app.permitsmanager.com \
+  pnpm --filter @workspace/permits-manager-site run build
+```
+
+Use the isolated Node path above; do not upgrade system Node or other projects' dependencies. Sourcing nvm with `--no-use` avoids the earlier `version "install"` selection error.
+
+### B. Set the protected SMTP environment locally
+
+This preserves an existing environment file instead of overwriting it:
+
+```bash
+sudo install -d -o root -g root -m 0750 /etc/permitsmanager &&
+if ! sudo test -e /etc/permitsmanager/marketing-api.env; then
+  sudo install -o root -g root -m 0600 deploy/marketing-api.env.example \
+    /etc/permitsmanager/marketing-api.env
+fi
+sudo chown root:root /etc/permitsmanager/marketing-api.env &&
+sudo chmod 0600 /etc/permitsmanager/marketing-api.env &&
+sudoedit /etc/permitsmanager/marketing-api.env
+```
+
+Use the variable names in `deploy/marketing-api.env.example`:
+
+- `HOST=127.0.0.1`, `PORT=5000` (or a separately checked free port).
+- `SMTP_HOST=mail.smtp2go.com`, `SMTP_PORT=587`.
+- `SMTP_USER`, `SMTP_PASS`: SMTP2GO **SMTP credentials**, not the dashboard login.
+- `SMTP_FROM`: one bare email address verified in SMTP2GO. Copy the existing verified sender locally or use another verified sender; do not change the application.
+- `SMTP_TO`: one destination inbox confirmed by the owner. This is separate from From.
+
+Replace every placeholder. Use systemd EnvironmentFile syntax (`KEY="value"`), not `export KEY=...`, and no shell substitutions or inline comments. Remove obsolete `DATABASE_URL` from this marketing file if present; do not modify any other service's file. Do not paste file contents or passwords back into chat.
+
+### C. Check port use and start only the marketing service
 
 ```bash
 sudo ss -ltnp
@@ -215,9 +263,9 @@ The checker rejects invalid ports, reserved application port `3000`, inspection 
 2. `PORT` in the protected environment file.
 3. The upstream port in `deploy/nginx-api-location.conf.example` when copied into the live marketing host.
 
-Build the revised API with `pnpm --filter @workspace/api-server run build`. Verify `command -v node` with the isolated version active. Check the service template's absolute `ExecStart` binary exists and matches it; systemd does not source nvm. The template currently matches the verified Node `v24.22.1` installation.
+Verify `command -v node` with the isolated version active. Check the service template's absolute `ExecStart` binary exists and matches it; systemd does not source nvm. The template matches the previously verified Node `v24.22.1`. If yours differs, edit only this project's service template before installing.
 
-After implementing SMTP, preparing its protected configuration, and checking the port:
+For a first installation, after preparing the configuration and checking the port:
 
 ```bash
 if sudo test -e /etc/systemd/system/permitsmanager-marketing-api.service ||
@@ -235,14 +283,48 @@ fi
 sudo systemctl status permitsmanager-marketing-api --no-pager
 sudo journalctl -u permitsmanager-marketing-api -n 50 --no-pager
 curl --fail --silent --show-error http://127.0.0.1:5000/api/healthz
+curl --fail --silent --show-error http://127.0.0.1:5000/api/readyz
 sudo ss -ltnp 'sport = :5000'
 ```
 
-The listener must be on `127.0.0.1:5000`, not `0.0.0.0:5000`. Inspect logs locally and redact secrets before sharing them. Health alone does not prove email delivery: test a real form, receipt at the destination mailbox, and an SMTP failure before declaring forms ready.
+If the service already exists, inspect its unit locally with `sudo systemctl cat permitsmanager-marketing-api` and compare its paths/hardening to the example. Do not overwrite it blindly. After any approved unit edits run `sudo systemctl daemon-reload`. After a build or environment change run `sudo systemctl restart permitsmanager-marketing-api`, then the health/readiness commands above.
 
-Back up the active marketing Nginx file, then replace **only its `/api/` location** with `deploy/nginx-api-location.conf.example`. Preserve any Certbot TLS additions. Run `sudo nginx -t && sudo systemctl reload nginx`; verify the proxied health endpoint and real form delivery. Do not install the location snippet directly in `sites-enabled`.
+The listener must be `127.0.0.1:5000`, never public. `healthz` confirms the process; `readyz` confirms settings are present and structurally valid, **not** successful SMTP authentication, sender verification or inbox delivery. Logs contain references and status codes, not submission content or raw SMTP errors.
 
-Later API updates: rebuild, then `sudo systemctl restart permitsmanager-marketing-api`, and repeat local/proxied health and form checks. Restart **only this service**. Nginx reload is needed only for configuration changes, always after `nginx -t`.
+### D. Enable the marketing host's API proxy
+
+Keep `/api/` returning 503 until the service is ready. Back up the active marketing file **outside** Nginx include directories so a backup is not loaded as a second virtual host:
+
+```bash
+SITE="$(readlink -f /etc/nginx/sites-enabled/permitsmanager-site.conf)" &&
+test -f "$SITE" &&
+sudo install -d -o root -g root -m 0700 /var/backups/permitsmanager-nginx &&
+sudo cp -p "$SITE" "/var/backups/permitsmanager-nginx/marketing-$(date +%Y%m%d-%H%M%S).conf" &&
+sudoedit "$SITE"
+```
+
+Replace **only the existing marketing `/api/` location** with `deploy/nginx-api-location.conf.example`. Preserve the rest of the file, including Certbot HTTPS/redirects. Do not install this location-only snippet directly in `sites-enabled` and do not edit `permitflow.conf`.
+
+The snippet overwrites `X-Forwarded-For` with `$remote_addr`; the API trusts only the loopback Nginx hop. Do not switch to client-supplied forwarded headers. If a CDN is added later, configure Nginx real-IP handling with only its exact trusted ranges before changing this scheme.
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+curl --fail --silent --show-error https://permitsmanager.com/api/healthz
+curl --fail --silent --show-error https://permitsmanager.com/api/readyz
+```
+
+Reloading Nginx applies the checked configuration; it does not restart the other applications. If necessary, restore the timestamped backup to the exact `$SITE` path, then test and reload. Never copy the backup into `sites-enabled` as an additional file.
+
+### E. Verify real delivery before declaring forms live
+
+1. Confirm `SMTP_TO` with the owner and authorize a real test. Submit a uniquely labeled message through Contact and confirm receipt in that inbox (check spam too). Confirm fixed sender and visitor Reply-To.
+2. Exercise Demo with the optional process/challenge and Request Access with phone/volume. Confirm every field is present and no application account is created.
+3. Verify failure handling before public launch: locally set an intentionally invalid SMTP password in the protected file, restart **only this service**, and submit a test. The browser should retain fields, show an error and not show success. Restore the correct setting immediately, restart and verify readiness and a successful submission. Never display or share credentials during this exercise.
+4. A successful submission means SMTP2GO accepted the email, not guaranteed final delivery. SMTP rejection/timeout returns 502; missing configuration returns 503. There is no lead database or persistent retry queue. A connection lost after acceptance may leave delivery uncertain; check the inbox before retrying to avoid duplicates.
+5. Five attempts per client IP per 15 minutes and a global 100/hour cap protect this single-instance service. Shared offices may share an IP. Limits are in memory and reset on restart; 429 includes Retry-After. Bodies are capped at 16KB, fields retain their existing limits, and excessive links are rejected. These are basic abuse controls, not full bot protection.
+6. Browser origins are restricted to `https://permitsmanager.com` and `https://www.permitsmanager.com` in production. Same-origin HTTPS needs no permissive CORS header. Non-browser clients can omit Origin, so rate limiting still applies.
+
+For later updates, pull/build, then restart **only** `permitsmanager-marketing-api`. Environment changes require that restart; static rebuilds alone do not. Nginx needs reloading only after a configuration edit and successful `nginx -t`.
 
 ## Legacy database mode: not part of this launch
 

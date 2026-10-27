@@ -21,11 +21,19 @@ import type {
 
 import type {
   AccessRequestInput,
+  ApiError,
   ContactRequestInput,
   DemoRequestInput,
+  EmailReadiness,
   HealthStatus,
   InquiryReceipt,
-  MarketingEventInput
+  JsonRequiredResponse,
+  MailFailedResponse,
+  MailUnavailableResponse,
+  MarketingEventInput,
+  OriginDeniedResponse,
+  RateLimitedResponse,
+  TooLargeResponse
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -133,6 +141,84 @@ export function useHealthCheck<TData = Awaited<ReturnType<typeof healthCheck>>, 
 
 
 
+export const getEmailReadinessUrl = () => {
+
+
+
+
+  return `/api/readyz`
+}
+
+/**
+ * Checks configuration presence and syntax only, not SMTP authentication or delivery.
+ * @summary Check mail configuration
+ */
+export const emailReadiness = async ( options?: Parameters<typeof customFetch>[1]): Promise<EmailReadiness> => {
+
+  return customFetch<EmailReadiness>(getEmailReadinessUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getEmailReadinessQueryKey = () => {
+    return [
+    `/api/readyz`
+    ] as const;
+    }
+
+
+export const getEmailReadinessQueryOptions = <TData = Awaited<ReturnType<typeof emailReadiness>>, TError = ErrorType<EmailReadiness>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof emailReadiness>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getEmailReadinessQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof emailReadiness>>> = ({ signal }) => emailReadiness({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof emailReadiness>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type EmailReadinessQueryResult = NonNullable<Awaited<ReturnType<typeof emailReadiness>>>
+export type EmailReadinessQueryError = ErrorType<EmailReadiness>
+
+
+/**
+ * @summary Check mail configuration
+ */
+
+export function useEmailReadiness<TData = Awaited<ReturnType<typeof emailReadiness>>, TError = ErrorType<EmailReadiness>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof emailReadiness>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getEmailReadinessQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
 export const getSubmitDemoRequestUrl = () => {
 
 
@@ -142,6 +228,7 @@ export const getSubmitDemoRequestUrl = () => {
 }
 
 /**
+ * Sends a plain-text email via SMTP2GO. No database storage. Success means SMTP acceptance, not guaranteed inbox delivery.
  * @summary Submit a demo request
  */
 export const submitDemoRequest = async (demoRequestInput: DemoRequestInput, options?: Parameters<typeof customFetch>[1]): Promise<InquiryReceipt> => {
@@ -175,7 +262,7 @@ return customFetch<InquiryReceipt>(getSubmitDemoRequestUrl(),
 
 export const getSubmitDemoRequestMutationKey = () => ['submitDemoRequest'] as const;
 
-export const getSubmitDemoRequestMutationOptions = <TError = ErrorType<void>,
+export const getSubmitDemoRequestMutationOptions = <TError = ErrorType<void | OriginDeniedResponse | TooLargeResponse | JsonRequiredResponse | RateLimitedResponse | MailFailedResponse | MailUnavailableResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitDemoRequest>>, TError,SubmitDemoRequestMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof submitDemoRequest>>, TError,SubmitDemoRequestMutationVariables, TContext> => {
 
@@ -204,13 +291,13 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type SubmitDemoRequestMutationResult = NonNullable<Awaited<ReturnType<typeof submitDemoRequest>>>
     export type SubmitDemoRequestMutationBody = BodyType<DemoRequestInput>
-    export type SubmitDemoRequestMutationError = ErrorType<void>
+    export type SubmitDemoRequestMutationError = ErrorType<void | OriginDeniedResponse | TooLargeResponse | JsonRequiredResponse | RateLimitedResponse | MailFailedResponse | MailUnavailableResponse>
     export type SubmitDemoRequestMutationVariables = {data: BodyType<DemoRequestInput>}
 
     /**
  * @summary Submit a demo request
  */
-export const useSubmitDemoRequest = <TError = ErrorType<void>,
+export const useSubmitDemoRequest = <TError = ErrorType<void | OriginDeniedResponse | TooLargeResponse | JsonRequiredResponse | RateLimitedResponse | MailFailedResponse | MailUnavailableResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitDemoRequest>>, TError,SubmitDemoRequestMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof submitDemoRequest>>,
@@ -230,6 +317,7 @@ export const getSubmitAccessRequestUrl = () => {
 }
 
 /**
+ * Emails an access request. No login, account or invitation is created and no database record is stored.
  * @summary Submit a company access request
  */
 export const submitAccessRequest = async (accessRequestInput: AccessRequestInput, options?: Parameters<typeof customFetch>[1]): Promise<InquiryReceipt> => {
@@ -263,7 +351,7 @@ return customFetch<InquiryReceipt>(getSubmitAccessRequestUrl(),
 
 export const getSubmitAccessRequestMutationKey = () => ['submitAccessRequest'] as const;
 
-export const getSubmitAccessRequestMutationOptions = <TError = ErrorType<void>,
+export const getSubmitAccessRequestMutationOptions = <TError = ErrorType<void | OriginDeniedResponse | TooLargeResponse | JsonRequiredResponse | RateLimitedResponse | MailFailedResponse | MailUnavailableResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitAccessRequest>>, TError,SubmitAccessRequestMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof submitAccessRequest>>, TError,SubmitAccessRequestMutationVariables, TContext> => {
 
@@ -292,13 +380,13 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type SubmitAccessRequestMutationResult = NonNullable<Awaited<ReturnType<typeof submitAccessRequest>>>
     export type SubmitAccessRequestMutationBody = BodyType<AccessRequestInput>
-    export type SubmitAccessRequestMutationError = ErrorType<void>
+    export type SubmitAccessRequestMutationError = ErrorType<void | OriginDeniedResponse | TooLargeResponse | JsonRequiredResponse | RateLimitedResponse | MailFailedResponse | MailUnavailableResponse>
     export type SubmitAccessRequestMutationVariables = {data: BodyType<AccessRequestInput>}
 
     /**
  * @summary Submit a company access request
  */
-export const useSubmitAccessRequest = <TError = ErrorType<void>,
+export const useSubmitAccessRequest = <TError = ErrorType<void | OriginDeniedResponse | TooLargeResponse | JsonRequiredResponse | RateLimitedResponse | MailFailedResponse | MailUnavailableResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitAccessRequest>>, TError,SubmitAccessRequestMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof submitAccessRequest>>,
@@ -318,6 +406,7 @@ export const getSubmitContactRequestUrl = () => {
 }
 
 /**
+ * Emails a contact message without database storage. Success means SMTP acceptance, not guaranteed inbox delivery.
  * @summary Submit a general contact request
  */
 export const submitContactRequest = async (contactRequestInput: ContactRequestInput, options?: Parameters<typeof customFetch>[1]): Promise<InquiryReceipt> => {
@@ -351,7 +440,7 @@ return customFetch<InquiryReceipt>(getSubmitContactRequestUrl(),
 
 export const getSubmitContactRequestMutationKey = () => ['submitContactRequest'] as const;
 
-export const getSubmitContactRequestMutationOptions = <TError = ErrorType<void>,
+export const getSubmitContactRequestMutationOptions = <TError = ErrorType<void | OriginDeniedResponse | TooLargeResponse | JsonRequiredResponse | RateLimitedResponse | MailFailedResponse | MailUnavailableResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitContactRequest>>, TError,SubmitContactRequestMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof submitContactRequest>>, TError,SubmitContactRequestMutationVariables, TContext> => {
 
@@ -380,13 +469,13 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type SubmitContactRequestMutationResult = NonNullable<Awaited<ReturnType<typeof submitContactRequest>>>
     export type SubmitContactRequestMutationBody = BodyType<ContactRequestInput>
-    export type SubmitContactRequestMutationError = ErrorType<void>
+    export type SubmitContactRequestMutationError = ErrorType<void | OriginDeniedResponse | TooLargeResponse | JsonRequiredResponse | RateLimitedResponse | MailFailedResponse | MailUnavailableResponse>
     export type SubmitContactRequestMutationVariables = {data: BodyType<ContactRequestInput>}
 
     /**
  * @summary Submit a general contact request
  */
-export const useSubmitContactRequest = <TError = ErrorType<void>,
+export const useSubmitContactRequest = <TError = ErrorType<void | OriginDeniedResponse | TooLargeResponse | JsonRequiredResponse | RateLimitedResponse | MailFailedResponse | MailUnavailableResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitContactRequest>>, TError,SubmitContactRequestMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof submitContactRequest>>,
@@ -406,9 +495,11 @@ export const getTrackMarketingEventUrl = () => {
 }
 
 /**
- * @summary Record a privacy-safe marketing event
+ * Tracking is retired. This endpoint never stores an event or sends email.
+ * @deprecated
+ * @summary Disabled marketing event endpoint
  */
-export const trackMarketingEvent = async (marketingEventInput: MarketingEventInput, options?: Parameters<typeof customFetch>[1]): Promise<InquiryReceipt> => {
+export const trackMarketingEvent = async (marketingEventInput: MarketingEventInput, options?: Parameters<typeof customFetch>[1]): Promise<unknown> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -424,7 +515,7 @@ export const trackMarketingEvent = async (marketingEventInput: MarketingEventInp
     }
     return headers;
   };
-return customFetch<InquiryReceipt>(getTrackMarketingEventUrl(),
+return customFetch<unknown>(getTrackMarketingEventUrl(),
   {
     ...options,
     method: 'POST',
@@ -439,7 +530,7 @@ return customFetch<InquiryReceipt>(getTrackMarketingEventUrl(),
 
 export const getTrackMarketingEventMutationKey = () => ['trackMarketingEvent'] as const;
 
-export const getTrackMarketingEventMutationOptions = <TError = ErrorType<void>,
+export const getTrackMarketingEventMutationOptions = <TError = ErrorType<ApiError>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof trackMarketingEvent>>, TError,TrackMarketingEventMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof trackMarketingEvent>>, TError,TrackMarketingEventMutationVariables, TContext> => {
 
@@ -468,13 +559,14 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type TrackMarketingEventMutationResult = NonNullable<Awaited<ReturnType<typeof trackMarketingEvent>>>
     export type TrackMarketingEventMutationBody = BodyType<MarketingEventInput>
-    export type TrackMarketingEventMutationError = ErrorType<void>
+    export type TrackMarketingEventMutationError = ErrorType<ApiError>
     export type TrackMarketingEventMutationVariables = {data: BodyType<MarketingEventInput>}
 
     /**
- * @summary Record a privacy-safe marketing event
+ * @deprecated
+ * @summary Disabled marketing event endpoint
  */
-export const useTrackMarketingEvent = <TError = ErrorType<void>,
+export const useTrackMarketingEvent = <TError = ErrorType<ApiError>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof trackMarketingEvent>>, TError,TrackMarketingEventMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof trackMarketingEvent>>,

@@ -1,125 +1,61 @@
-import { Router, type IRouter } from "express";
+import { randomInt } from "node:crypto";
+import { Router } from "express";
 import {
-  db,
-  marketingEventsTable,
-  marketingInquiriesTable,
-} from "@workspace/db";
-import {
-  SubmitAccessRequestBody,
-  SubmitAccessRequestResponse,
-  SubmitContactRequestBody,
-  SubmitContactRequestResponse,
-  SubmitDemoRequestBody,
-  SubmitDemoRequestResponse,
-  TrackMarketingEventBody,
-  TrackMarketingEventResponse,
+  SubmitAccessRequestBody, SubmitContactRequestBody, SubmitDemoRequestBody,
 } from "@workspace/api-zod";
+import { isMailbox, type InquiryKind, type MailService } from "../lib/mail";
 
-const router: IRouter = Router();
-
-router.post("/inquiries/demo", async (req, res): Promise<void> => {
-  const parsed = SubmitDemoRequestBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
+export function createInquiriesRouter(mail: MailService) {
+  const router = Router();
+  const schemas = {
+    demo: SubmitDemoRequestBody,
+    access: SubmitAccessRequestBody,
+    contact: SubmitContactRequestBody,
+  };
+  for (const kind of ["demo", "access", "contact"] as const) {
+    router.post(`/inquiries/${kind}`, async (req, res): Promise<void> => {
+      if (!req.is("application/json")) {
+        res.status(415).json({ error: "Send a JSON form submission." });
+        return;
+      }
+      const input = req.body && typeof req.body === "object" && !Array.isArray(req.body)
+        ? Object.fromEntries(Object.entries(req.body).map(([key, value]) =>
+          [key, typeof value === "string" ? value.trim() : value]))
+        : req.body;
+      const parsed = schemas[kind].safeParse(input);
+      if (!parsed.success || !isMailbox(parsed.data.workEmail) ||
+          /[\r\n\u0000]/.test(parsed.data.fullName) ||
+          /[\r\n\u0000]/.test(parsed.data.companyName ?? "") ||
+          Object.values(parsed.data).some(value =>
+            typeof value === "string" && (value.includes("\u0000") ||
+              (value.match(/https?:\/\//gi)?.length ?? 0) > 3))) {
+        res.status(400).json({ error: "Check the form fields and remove excessive links before trying again." });
+        return;
+      }
+      if (!mail.configured) {
+        res.status(503).json({ error: "Email submissions are temporarily unavailable. Please try again later." });
+        return;
+      }
+      // Safe integer response contract, without a database or persistent lead storage.
+      const id = randomInt(1, 2 ** 48 - 1);
+      try {
+        await mail.send(kind as InquiryKind, parsed.data as Record<string, string>, id);
+        res.status(201).json({
+          id, status: "received",
+          message: kind === "access"
+            ? "Your access request has been submitted for email delivery. No account has been created."
+            : `Your ${kind === "demo" ? "demo request" : "message"} has been submitted for email delivery.`,
+        });
+      } catch {
+        // SMTP errors can contain credentials, addresses or message content. Never log them.
+        req.log.warn({ inquiryType: kind, reference: id }, "Submission email could not be confirmed");
+        res.status(502).json({ error: "We could not confirm email delivery. Your form has not been cleared; please try again later." });
+      }
+    });
   }
-
-  const [inquiry] = await db
-    .insert(marketingInquiriesTable)
-    .values({
-      inquiryType: "demo",
-      fullName: parsed.data.fullName,
-      workEmail: parsed.data.workEmail,
-      companyName: parsed.data.companyName,
-      businessType: parsed.data.businessType,
-      challenge: parsed.data.challenge ?? null,
-    })
-    .returning({ id: marketingInquiriesTable.id });
-
-  res.status(201).json(
-    SubmitDemoRequestResponse.parse({
-      id: inquiry.id,
-      status: "received",
-      message: "Your demo request has been received.",
-    }),
-  );
-});
-
-router.post("/inquiries/access", async (req, res): Promise<void> => {
-  const parsed = SubmitAccessRequestBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-
-  const [inquiry] = await db
-    .insert(marketingInquiriesTable)
-    .values({
-      inquiryType: "access",
-      fullName: parsed.data.fullName,
-      workEmail: parsed.data.workEmail,
-      companyName: parsed.data.companyName,
-      businessType: parsed.data.businessType,
-      phone: parsed.data.phone ?? null,
-      monthlyPermitVolume: parsed.data.monthlyPermitVolume,
-    })
-    .returning({ id: marketingInquiriesTable.id });
-
-  res.status(201).json(
-    SubmitAccessRequestResponse.parse({
-      id: inquiry.id,
-      status: "received",
-      message: "Your access request has been saved. No account has been created.",
-    }),
-  );
-});
-
-router.post("/inquiries/contact", async (req, res): Promise<void> => {
-  const parsed = SubmitContactRequestBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-
-  const [inquiry] = await db
-    .insert(marketingInquiriesTable)
-    .values({
-      inquiryType: "contact",
-      fullName: parsed.data.fullName,
-      workEmail: parsed.data.workEmail,
-      companyName: parsed.data.companyName ?? null,
-      message: parsed.data.message,
-    })
-    .returning({ id: marketingInquiriesTable.id });
-
-  res.status(201).json(
-    SubmitContactRequestResponse.parse({
-      id: inquiry.id,
-      status: "received",
-      message: "Your message has been received.",
-    }),
-  );
-});
-
-router.post("/marketing-events", async (req, res): Promise<void> => {
-  const parsed = TrackMarketingEventBody.safeParse(req.body);
-  if (!parsed.success) {
-    res.status(400).json({ error: parsed.error.message });
-    return;
-  }
-
-  const [event] = await db
-    .insert(marketingEventsTable)
-    .values(parsed.data)
-    .returning({ id: marketingEventsTable.id });
-
-  res.status(202).json(
-    TrackMarketingEventResponse.parse({
-      id: event.id,
-      status: "received",
-      message: "Event recorded.",
-    }),
-  );
-});
-
-export default router;
+  // Explicitly retired. No storage and no emails for marketing clicks.
+  router.post("/marketing-events", (_req, res) => {
+    res.status(410).json({ error: "Marketing event tracking is disabled." });
+  });
+  return router;
+}

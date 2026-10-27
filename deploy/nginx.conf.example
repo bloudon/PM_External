@@ -13,7 +13,7 @@ server {
     location /api/ {
         # Do not serve index.html or report success for an undelivered form.
         # Replace this location with the optional proxy snippet ONLY after
-        # the SMTP handler is implemented, configured, and verified.
+        # the SMTP handler is configured and verified on this VPS.
         default_type application/json;
         add_header Cache-Control "no-store" always;
         return 503 '{"error":"Email submissions are not configured yet."}';

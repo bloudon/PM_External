@@ -48,7 +48,7 @@ function ErrorBox({ onRetry }: { onRetry?: () => void }) {
       <AlertCircle className="h-5 w-5 text-destructive shrink-0" aria-hidden />
       <div>
         <p className="font-semibold">We could not send your request.</p>
-        <p className="text-foreground/80">We could not confirm that your request was received. Check your connection and try again, or use the contact page if it keeps happening.</p>
+        <p className="text-foreground/80">Your form has not been cleared. Check your connection and try again later. If you recently submitted several requests, wait 15 minutes before retrying.</p>
         {onRetry && <button type="button" onClick={onRetry} className="mt-2 font-semibold underline">Dismiss and edit</button>}
       </div>
     </div>
@@ -83,6 +83,7 @@ export function DemoForm() {
   const details = buildDemoDetails(process, challenge);
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (m.isPending) return;
     if (!bt) return;
     const f = new FormData(e.currentTarget);
     const submittedDetails = buildDemoDetails(String(f.get('process') || ''), String(f.get('challenge') || ''));
@@ -122,6 +123,7 @@ export function ContactForm() {
   const sendEvent = useMarketingEvent();
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (m.isPending) return;
     const f = new FormData(e.currentTarget);
     const company = String(f.get('company') || '').trim();
     m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), message: String(f.get('message')).trim(), ...(company ? { companyName: company } : {}) } },
@@ -154,6 +156,7 @@ export function SignupForm() {
   const [bt, setBt] = useAudience();
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (m.isPending) return;
     if (!bt) return;
     const f = new FormData(e.currentTarget);
     const phone = String(f.get('phone') || '').trim();
@@ -163,7 +166,7 @@ export function SignupForm() {
   if (m.isSuccess)
     return (
       <Success title="Access request received" message={m.data.message}>
-        <p className="mt-3 text-sm text-foreground/80">The saved request is the first step toward your guided walkthrough to get you up and running fast. No login, account, or invitation has been created. Employees joining an existing company need an invitation from their administrator.</p>
+        <p className="mt-3 text-sm text-foreground/80">Your emailed request is the first step toward your guided walkthrough to get you up and running fast. No login, account, or invitation has been created. Employees joining an existing company need an invitation from their administrator.</p>
         <p className="mt-2 text-sm text-muted-foreground">Reference {m.data.id}</p>
       </Success>
     );

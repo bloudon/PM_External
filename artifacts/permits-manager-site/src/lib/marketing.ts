@@ -1,5 +1,3 @@
-import { useTrackMarketingEvent } from '@workspace/api-client-react';
-
 export type MarketingEventName =
   | 'cta_get_started'
   | 'cta_request_demo'
@@ -8,10 +6,7 @@ export type MarketingEventName =
   | 'demo_submitted'
   | 'contact_submitted';
 
-/** Only approved event names and the current pathname are sent. */
+/** Tracking is disabled: this static/SMTP site does not store marketing events. */
 export function useMarketingEvent() {
-  const { mutate } = useTrackMarketingEvent();
-  return (eventName: MarketingEventName) => {
-    mutate({ data: { eventName, path: window.location.pathname } });
-  };
+  return (_eventName: MarketingEventName) => {};
 }

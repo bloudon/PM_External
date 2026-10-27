@@ -1,6 +1,6 @@
 # OPTIONAL: replace the location /api/ block in the marketing host with this.
 # Do not install this location-only snippet directly into sites-enabled.
-# First implement SMTP delivery: the current API still uses a database.
+# Enable only after SMTP settings and the dedicated service are verified.
 # Keep port 5000 consistent with marketing-api.env and check-api-port.sh.
 location /api/ {
     proxy_pass http://127.0.0.1:5000/api/;
@@ -9,6 +9,8 @@ location /api/ {
     proxy_read_timeout 60s;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    # Overwrite, do not append: the loopback mail service trusts only this hop.
+    # For an upstream CDN, configure Nginx real_ip with its exact trusted ranges first.
+    proxy_set_header X-Forwarded-For $remote_addr;
     proxy_set_header X-Forwarded-Proto $scheme;
 }
