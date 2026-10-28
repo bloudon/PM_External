@@ -16,3 +16,10 @@ The user specifies that this is strictly an HTML site at this point: a public fr
 **Why:** The user explicitly corrected the database-based deployment approach; database-backed inquiry storage and marketing event tracking are not requirements.
 
 **How to apply:** Serve static assets through Nginx and use only a minimal server-side mail handler for SMTP forms. Keep SMTP credentials out of browser code. Do not add database setup or application features to this deployment without a new request.
+
+# Privileged Nginx path inspection
+Use sudo for Nginx path inspection on this VPS; a blank unprivileged `readlink -f` result does not establish that the configuration file is absent.
+
+**Why:** The owner's 2026-10-28 directory listing showed `/etc/nginx` as root-only (`0700`). The marketing configuration existed as a regular file in `sites-enabled`, despite unprivileged path resolution returning no output.
+
+**How to apply:** Inspect with `sudo ls` or `sudo readlink` before deciding a file is missing. When confirmed, give direct absolute-path backup/editor commands; keep backups outside Nginx include directories.
