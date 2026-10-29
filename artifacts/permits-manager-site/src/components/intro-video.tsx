@@ -71,7 +71,6 @@ export function IntroVideo() {
             className="group absolute inset-0 h-full w-full text-left focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[-6px] focus-visible:outline-[hsl(200_88%_62%)]">
             <img src={POSTER} alt="" className="absolute inset-0 h-full w-full object-contain" decoding="async" />
             <span aria-hidden className="absolute inset-0 bg-gradient-to-r from-[hsl(236_55%_10%/0.82)] via-[hsl(236_55%_10%/0.25)] to-transparent" />
-            <span aria-hidden className="absolute left-4 top-4 md:left-6 md:top-6 font-mono text-[10px] md:text-xs uppercase tracking-[0.18em] text-[hsl(200_88%_62%)]">Introduction</span>
             <span aria-hidden className="absolute left-4 bottom-4 md:left-6 md:bottom-6 max-w-[55%] font-display text-2xl md:text-4xl font-extrabold leading-[1] text-background">Where’s the permit?</span>
             <span aria-hidden className="absolute right-4 bottom-4 md:right-6 md:bottom-6 flex h-14 w-14 md:h-20 md:w-20 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-[4px_4px_0_0_hsl(var(--foreground))] transition-transform group-hover:scale-105">
               <Play className="h-6 w-6 md:h-8 md:w-8 translate-x-0.5" fill="currentColor" />

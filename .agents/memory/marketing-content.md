@@ -28,4 +28,4 @@ The owner approved routing the homepage demo/free-trial CTA to the existing demo
 
 **Why:** Automatic application signup and trial activation are not part of the current marketing-site funnel.
 
-**How to apply:** Describe this as a demo/free-trial request, not immediate trial signup. State that submitting the request does not start a trial. Do not restore “Your trial begins at signup” or promise automatic activation until the application flow is confirmed ready.
+**How to apply:** Describe this as a demo/free-trial request, not immediate trial signup. The owner explicitly removed the public sentence “This request does not start a trial”; do not restore it. Do not restore “Your trial begins at signup” or promise automatic activation until the application flow is confirmed ready.

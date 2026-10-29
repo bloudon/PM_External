@@ -56,7 +56,7 @@ export default function Home() {
                 <Cta href="/features" variant="ghost" id="hero-features">Explore Features</Cta>
               </div>
               <p data-testid="text-hero-offer" className="mt-4 text-sm font-semibold text-foreground">30-day trial. Free standard setup and onboarding training. No credit card required.</p>
-              <p data-testid="text-hero-clarify" className="mt-1 text-xs text-foreground/70">Request a demo or trial setup. This request does not start a trial.</p>
+              <p data-testid="text-hero-clarify" className="mt-1 text-xs text-foreground/70">Request a demo or trial setup.</p>
               <p data-testid="text-hero-origin" className="mt-4 font-mono text-xs uppercase tracking-[0.14em] text-foreground/70">Built from real permit-expediting experience.</p>
             </Reveal>
           </div>
