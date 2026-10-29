@@ -36,6 +36,8 @@ _Describe the high-level user-facing capabilities of this app once they exist._
 
 _Populate as you build — explicit user instructions worth remembering across sessions._
 
+- Do not use em dashes in site copy. The owner wants them removed as a standing rule.
+
 ## Gotchas
 
 _Populate as you build — sharp edges, "always run X before Y" rules._

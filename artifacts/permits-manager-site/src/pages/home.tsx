@@ -42,7 +42,7 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-5 md:px-8 pt-6 pb-8 md:pt-10 md:pb-10 grid lg:grid-cols-[1fr_1.1fr] gap-x-10 gap-y-6 items-center">
           <div className="lg:col-start-1 lg:row-start-1 lg:self-end">
             <Reveal><Eyebrow>Permit management software for contractors &amp; expediters</Eyebrow></Reveal>
-            <Reveal delay={0.05}><h1 data-testid="text-hero-title" className="font-display text-[2.1rem] sm:text-4xl md:text-5xl xl:text-[3.5rem] font-extrabold leading-[1.03]">Keep every <span className="text-primary">permit</span>—and every next step—in view.</h1></Reveal>
+            <Reveal delay={0.05}><h1 data-testid="text-hero-title" className="font-display text-[2.1rem] sm:text-4xl md:text-5xl xl:text-[3.5rem] font-extrabold leading-[1.03]">Keep every <span className="text-primary">permit</span> and every next step in view.</h1></Reveal>
             <Reveal delay={0.1}><p className="mt-4 text-base md:text-lg max-w-xl text-foreground/85">Manage permits across active jobs and jurisdictions with clear assignments, connected documents, and inspection follow-up. Built for contractors handling permitting in-house and firms managing it for their clients.</p></Reveal>
           </div>
           <div className="lg:col-start-2 lg:row-start-1 lg:row-span-2"><Reveal delay={0.15}><IntroVideo /></Reveal></div>

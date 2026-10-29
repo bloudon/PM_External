@@ -68,7 +68,7 @@ export function createMailService(
       if (!config || !transport) throw new Error("MAIL_UNAVAILABLE");
       if (!isMailbox(fields.workEmail ?? "")) throw new Error("INVALID_REPLY_TO");
       const text = [
-        `${titles[kind]} — Permits Manager`,
+        `${titles[kind]} | Permits Manager`,
         `Reference: ${reference}`,
         ...Object.entries(fields).map(([key, value]) => `${labels[key] ?? key}:\n${value}`),
         ...(kind === "access" ? ["This is a company access request only. No account or invitation has been created."] : []),
