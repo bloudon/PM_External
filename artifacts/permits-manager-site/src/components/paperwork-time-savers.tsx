@@ -49,6 +49,31 @@ export function PaperworkTimeSavers({ ctaHref, ctaLabel, id = 'paperwork' }: { c
           ))}
         </div>
         <Reveal>
+          <figure className="mt-8 overflow-hidden rounded-lg border border-border bg-card">
+            <a
+              href={`${import.meta.env.BASE_URL}product-screenshots/documents-attached-files.png`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:-outline-offset-2"
+              aria-label="View the attached project files screenshot at full size (opens in a new tab)"
+            >
+              <img
+                src={`${import.meta.env.BASE_URL}product-screenshots/documents-attached-files.png`}
+                alt="Permits Manager Documents section with submission tabs, a file upload area, and attached project PDF files."
+                width={1328}
+                height={427}
+                loading="lazy"
+                decoding="async"
+                className="block h-auto w-full"
+              />
+            </a>
+            <figcaption className="px-5 py-4 text-sm text-foreground/75">
+              <span className="font-semibold text-foreground">Project files, together in one place.</span>{' '}
+              A real view of the Documents section showing attached job files. Select the image to view it at full size.
+            </figcaption>
+          </figure>
+        </Reveal>
+        <Reveal>
           <div className="mt-7 md:mt-8 flex flex-col sm:flex-row sm:items-center gap-4 sm:justify-between">
             <p data-testid="text-jurisdictions-growing" className="text-sm text-foreground/75 max-w-xl">
               <span className="font-semibold text-foreground">The list of supported jurisdictions and forms is growing.</span> Ask us which ones are available for your area.

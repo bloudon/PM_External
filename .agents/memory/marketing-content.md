@@ -10,6 +10,12 @@ The owner approved zoomed-in crops of the existing application screenshots for p
 
 **How to apply:** Use genuine cropped views, redact identifying records, and label crops accurately. Request additional genuine screenshots for unsupported visual claims.
 
+The owner supplied the Documents attached-files view for public use because opening the annotation editor exposes client information.
+
+**Why:** The owner wants to show real document functionality without revealing client details.
+
+**How to apply:** Label this image as the Documents or attached-files view, not the annotation editor. Do not request an unredacted client PDF to illustrate annotations.
+
 The owner chose to leave the current Privacy and Terms pages unchanged and said, “I will update privacy/terms later.”
 
 **Why:** Legal publication is owner-managed pending approved copy.
