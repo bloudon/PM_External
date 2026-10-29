@@ -144,6 +144,34 @@ paths:
           $ref: "#/components/responses/MailFailed"
         "503":
           $ref: "#/components/responses/MailUnavailable"
+  /hero-events:
+    post:
+      operationId: trackHeroEvent
+      tags: [inquiries]
+      summary: Record an anonymous homepage video or trial CTA event
+      description: Writes one allowlisted event to structured server logs. No database, cookies, visitor identifiers, or free-form properties. Counts are indicative and not unique visitors.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/HeroEventInput"
+      responses:
+        "204":
+          description: Event recorded
+        "400":
+          description: Invalid event
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ApiError" }
+        "403":
+          $ref: "#/components/responses/OriginDenied"
+        "413":
+          $ref: "#/components/responses/TooLarge"
+        "415":
+          $ref: "#/components/responses/JsonRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
   /marketing-events:
     post:
       operationId: trackMarketingEvent
@@ -317,6 +345,19 @@ components:
         - id
         - status
         - message
+    HeroEventInput:
+      type: object
+      additionalProperties: false
+      properties:
+        eventName:
+          type: string
+          enum:
+            - hero_video_start
+            - hero_video_half
+            - hero_video_complete
+            - hero_trial_click
+      required:
+        - eventName
     MarketingEventInput:
       type: object
       properties:

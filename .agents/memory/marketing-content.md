@@ -22,3 +22,10 @@ Describe onboarding as a guided walkthrough to get users up and running fast. Ex
 **Why:** The owner explicitly confirmed these product capabilities and requested this setup language.
 
 **How to apply:** Keep marketing setup and FAQ copy consistent with these facts; do not hedge contractor imports as unconfirmed or describe QuickBooks as export-only. Do not infer file formats, sync behavior, or other import capabilities.
+
+# Demo and trial request funnel
+The owner approved routing the homepage demo/free-trial CTA to the existing demo request form for now. They said, “We'll structure the funnel to flow to our onboarding for trial in the application later.”
+
+**Why:** Automatic application signup and trial activation are not part of the current marketing-site funnel.
+
+**How to apply:** Describe this as a demo/free-trial request, not immediate trial signup. State that submitting the request does not start a trial. Do not restore “Your trial begins at signup” or promise automatic activation until the application flow is confirmed ready.

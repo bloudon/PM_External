@@ -1,0 +1,30 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "FJcQS6uvgtvovmSE95IT_"
+uri = "file://generated-artifacts/hero-desktop.jpg"
+type = "image"
+title = "Desktop hero preview"
+description = "1366 × 768: headline, introduction video and demo/free-trial request CTA."
+logical_id = "0fb14d3f-a90c-4b18-b3af-d84aaed356f7"
+content_hash = "sha256:b117f226d24cb18e90eced537337a112b779b533333f757a6255f6a96f25ff20"
+size = 121175
+mtime_ms = 1793283081038
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:b7f62581-c508-4708-905f-76af4e749ece/0fb14d3f-a90c-4b18-b3af-d84aaed356f7/6382b482-cb98-42eb-91e6-9c2eee4664e2"
+storage_version_token = "1793283383386920"
+content_type = "image/jpeg"
+
+[[outputs]]
+id = "GyOnFvmPZ4lFPLSxlLiGh"
+uri = "file://generated-artifacts/hero-mobile.jpg"
+type = "image"
+title = "Mobile hero preview"
+description = "390 × 844: responsive copy, inline introduction video, and request CTA."
+logical_id = "4e7eb7a1-4e09-41c3-8562-a14b98159479"
+content_hash = "sha256:654c7605b132bcd75261dc886389a37e698aca48bff00e0ce5f2f7201c43f4cf"
+size = 68412
+mtime_ms = 1793283082874
+storage_uri = "gcs://replit-rams-assets-janeway/rams/assets/repl:b7f62581-c508-4708-905f-76af4e749ece/4e7eb7a1-4e09-41c3-8562-a14b98159479/39b63ab9-74ae-4aaf-8c60-b83b918ee6c2"
+storage_version_token = "1793283383855222"
+content_type = "image/jpeg"

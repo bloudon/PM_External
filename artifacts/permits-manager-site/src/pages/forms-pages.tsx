@@ -26,9 +26,9 @@ function FormPage({ eyebrow, h1, lead, aside, children, title, desc }: { eyebrow
 }
 
 export const DemoPage = () => (
-  <FormPage title="Request a Demo | Permits Manager" desc="Request a walkthrough of Permits Manager for your contracting or permit expediting business." eyebrow="Request a demo" h1="See how Permits Manager fits your workflow."
-    lead="Tell us about your company and permitting challenge. We will follow up to arrange a walkthrough covering projects and permits, documents, assignments, inspections, and fees and billing as they apply to your business."
-    aside={<>Already a customer? <a href={APP_URL} className="font-semibold underline">Sign In</a>.</>}><DemoForm /></FormPage>
+  <FormPage title="Request a Demo / Free Trial | Permits Manager" desc="Request a walkthrough or trial setup of Permits Manager for your contracting or permit expediting business." eyebrow="Request a demo / free trial" h1="See how Permits Manager fits your workflow."
+    lead="Tell us about your company and permitting challenge. We will follow up to arrange a walkthrough covering projects and permits, documents, assignments, inspections, and fees and billing as they apply to your business. Interested in a trial? Mention it and we will arrange your trial setup."
+    aside={<>30-day trial. Free standard setup and onboarding training. No credit card required. Request a demo or trial setup. This request does not start a trial.<br /><br />Already a customer? <a href={APP_URL} className="font-semibold underline">Sign In</a>.</>}><DemoForm /></FormPage>
 );
 export const SignupPage = () => (
   <FormPage title="Get Started | Permits Manager" desc="Request access to Permits Manager for your contractor or permit expediting company." eyebrow="Get started" h1="Get started with Permits Manager."

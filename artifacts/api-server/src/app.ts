@@ -5,6 +5,7 @@ import { logger } from "./lib/logger";
 import { createMailService, type MailService } from "./lib/mail";
 import { createInquiriesRouter } from "./routes/inquiries";
 import healthRouter from "./routes/health";
+import { createHeroEventsRouter } from "./routes/hero-events";
 
 export function createApp(options: {
   mail?: MailService;
@@ -61,6 +62,7 @@ export function createApp(options: {
   }));
   app.use(express.json({ limit: "16kb" }));
   app.use("/api", createInquiriesRouter(mail));
+  app.use("/api", createHeroEventsRouter());
   const handleError: ErrorRequestHandler = (err, _req, res, _next) => {
     const status = err.type === "entity.too.large" ? 413 : err instanceof SyntaxError ? 400 : 500;
     res.status(status).json({ error: status === 413 ? "Submission is too large." :

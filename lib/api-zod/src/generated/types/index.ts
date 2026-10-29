@@ -14,6 +14,8 @@ export * from './contactRequestInput';
 export * from './demoRequestInput';
 export * from './emailReadiness';
 export * from './healthStatus';
+export * from './heroEventInput';
+export * from './heroEventInputEventName';
 export * from './inquiryReceipt';
 export * from './inquiryReceiptStatus';
 export * from './jsonRequiredResponse';

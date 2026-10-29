@@ -114,6 +114,17 @@ export const SubmitContactRequestResponse = zod.object({
 
 
 /**
+ * Writes one allowlisted event to structured server logs. No database, cookies, visitor identifiers, or free-form properties. Counts are indicative and not unique visitors.
+ * @summary Record an anonymous homepage video or trial CTA event
+ */
+export const TrackHeroEventBody = zod.object({
+  "eventName": zod.enum(['hero_video_start', 'hero_video_half', 'hero_video_complete', 'hero_trial_click'])
+})
+
+export const TrackHeroEventResponse = zod.void()
+
+
+/**
  * Tracking is retired. This endpoint never stores an event or sends email.
  * @deprecated
  * @summary Disabled marketing event endpoint

@@ -94,7 +94,7 @@ export function DemoForm() {
     m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), companyName: String(f.get('company')).trim(), businessType: bt, ...(submittedDetails.challenge ? { challenge: submittedDetails.challenge } : {}) } },
       { onSuccess: () => sendEvent('demo_submitted') });
   };
-  if (m.isSuccess) return <Success title="Demo request received" message={m.data.message}><p className="mt-3 text-sm text-muted-foreground">Reference {m.data.id}</p></Success>;
+  if (m.isSuccess) return <Success title="Request received" message={m.data.message}><p className="mt-3 text-sm text-foreground/80">We will follow up about your demo or trial setup. No trial, account, or login has been activated.</p><p className="mt-3 text-sm text-muted-foreground">Reference {m.data.id}</p></Success>;
   return (
     <form onSubmit={submit} className="grid gap-5" aria-busy={m.isPending}>
       <Field label="Full name" htmlFor={id + 'n'}><input id={id + 'n'} name="name" required minLength={2} maxLength={120} autoComplete="name" className={input} data-testid="input-name" /></Field>
@@ -112,7 +112,7 @@ export function DemoForm() {
       </Field>
       {!details.ok && <p id={id + 'details-error'} role="alert" className="text-sm text-destructive" data-testid="error-demo-details">{details.error}</p>}
       {m.isError && <ErrorBox />}
-      <Submit pending={m.isPending}>Request a Demo</Submit>
+      <Submit pending={m.isPending}>Request a Demo / Free Trial</Submit>
     </form>
   );
 }

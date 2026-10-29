@@ -315,6 +315,35 @@ curl --fail --silent --show-error https://permitsmanager.com/api/readyz
 
 Reloading Nginx applies the checked configuration; it does not restart the other applications. If necessary, restore the timestamped backup to the exact `$SITE` path, then test and reload. Never copy the backup into `sites-enabled` as an additional file.
 
+### Homepage video and measurement updates
+
+The homepage video, poster and captions ship with the static build. The demo/free-trial CTA still submits through the existing demo request funnel; it does not create an application account or start a trial.
+
+The video update also adds anonymous, allowlisted event counts in the existing API's server logs. For an already-configured VPS installation, rebuild **both** packages and restart **only** the marketing API:
+
+```bash
+cd /home/administrator/apps/PM_External &&
+git pull --ff-only origin main &&
+export NVM_DIR="$HOME/.local/share/pm-external-nvm" &&
+. "$NVM_DIR/nvm.sh" --no-use &&
+nvm use 24 &&
+pnpm install --frozen-lockfile &&
+pnpm --filter @workspace/permits-manager-site build &&
+pnpm --filter @workspace/api-server build &&
+sudo systemctl restart permitsmanager-marketing-api
+```
+
+Allow a moment for startup, then check:
+
+```bash
+curl --retry 5 --retry-connrefused --retry-delay 1 --max-time 10 \
+  --fail --silent --show-error https://permitsmanager.com/api/healthz
+```
+
+No Nginx edits, database setup, SMTP setting changes, or AI credentials are needed on the VPS. The existing `/api/` proxy serves the new `/api/hero-events` endpoint. Playback works without event collection; if the API is not updated, measurement will not be recorded.
+
+See `artifacts/permits-manager-site/assets/intro-video.md` for caption provenance, measurement semantics, and the journal command for viewing events.
+
 ### E. Verify real delivery before declaring forms live
 
 1. Confirm `SMTP_TO` with the owner and authorize a real test. Submit a uniquely labeled message through Contact and confirm receipt in that inbox (check spam too). Confirm fixed sender and visitor Reply-To.

@@ -1,6 +1,10 @@
+import { useRef } from 'react';
 import { Link, useLocation, useSearch } from 'wouter';
+import { IntroVideo } from '@/components/intro-video';
+import { trackHeroEvent } from '@/lib/hero-analytics';
+import { useMarketingEvent } from '@/lib/marketing';
 import { audienceQuery } from '@/lib/audience';
-import { Eye, Link2, Users, ArrowUpRight, ClipboardList, FolderOpen, UserCheck, Receipt, CheckSquare } from 'lucide-react';
+import { Eye, Link2, Users, ArrowUpRight, ClipboardList, FolderOpen, UserCheck, Receipt, CheckSquare, ArrowRight } from 'lucide-react';
 import { Seo } from '@/components/seo';
 import { Shell } from '@/components/layout';
 import { Cta, Eyebrow, H2, Reveal, Section } from '@/components/bits';
@@ -29,19 +33,41 @@ const fit = [
 const icons = [ClipboardList, FolderOpen, UserCheck, Receipt];
 
 export default function Home() {
+  const trialClicked = useRef(false);
+  const sendEvent = useMarketingEvent();
   return (
     <Shell>
       <Seo title="Permits Manager | Permit management software for contractors and expediters" description="Manage projects, permits, inspections, documents and team responsibilities in one workspace. Built by permit expediters for contractors and expediting firms." />
       <section className="grid-paper border-b border-border overflow-hidden">
-        <div className="mx-auto max-w-7xl px-5 md:px-8 pt-10 pb-10 md:pt-14 md:pb-14 grid lg:grid-cols-[1fr_1fr] gap-10 items-center">
-          <div>
+        <div className="mx-auto max-w-7xl px-5 md:px-8 pt-6 pb-8 md:pt-10 md:pb-10 grid lg:grid-cols-[1fr_1.1fr] gap-x-10 gap-y-6 items-center">
+          <div className="lg:col-start-1 lg:row-start-1 lg:self-end">
             <Reveal><Eyebrow>Permit management software for contractors &amp; expediters</Eyebrow></Reveal>
-            <Reveal delay={0.05}><h1 data-testid="text-hero-title" className="font-display text-4xl md:text-6xl font-extrabold leading-[1.02]">Keep every <span className="text-primary">permit</span>—and every next step—in view.</h1></Reveal>
-            <Reveal delay={0.12}><p className="mt-5 text-lg max-w-xl text-foreground/85">Manage permits across active jobs and jurisdictions with clear assignments, connected documents, and inspection follow-up. Built for contractors handling permitting in-house and firms managing it for their clients.</p></Reveal>
-            <Reveal delay={0.18}><div className="mt-7 flex flex-wrap gap-4"><Cta href="/demo" id="hero-demo" arrow>Request a Demo</Cta><Cta href="/features" variant="ghost" id="hero-features">Explore Features</Cta></div>
-              <p data-testid="text-hero-origin" className="mt-5 font-mono text-xs uppercase tracking-[0.14em] text-foreground/70">Built from real permit-expediting experience.</p></Reveal>
+            <Reveal delay={0.05}><h1 data-testid="text-hero-title" className="font-display text-[2.1rem] sm:text-4xl md:text-5xl xl:text-[3.5rem] font-extrabold leading-[1.03]">Keep every <span className="text-primary">permit</span>—and every next step—in view.</h1></Reveal>
+            <Reveal delay={0.1}><p className="mt-4 text-base md:text-lg max-w-xl text-foreground/85">Manage permits across active jobs and jurisdictions with clear assignments, connected documents, and inspection follow-up. Built for contractors handling permitting in-house and firms managing it for their clients.</p></Reveal>
           </div>
-          <Reveal delay={0.2}><DashboardMock /></Reveal>
+          <div className="lg:col-start-2 lg:row-start-1 lg:row-span-2"><Reveal delay={0.15}><IntroVideo /></Reveal></div>
+          <div className="lg:col-start-1 lg:row-start-2 lg:self-start">
+            <Reveal delay={0.18}>
+              <div className="flex flex-wrap gap-3">
+                <Link href="/demo" onClick={() => { if (!trialClicked.current) { trialClicked.current = true; trackHeroEvent('hero_trial_click'); } sendEvent('cta_request_demo'); }} data-testid="link-hero-demo"
+                  className="inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 text-[15px] font-semibold transition-transform duration-200 hover:-translate-y-0.5 bg-primary text-primary-foreground shadow-[4px_4px_0_0_hsl(var(--foreground))] hover:shadow-[6px_6px_0_0_hsl(var(--foreground))]">
+                  Request a Demo / Free Trial <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
+                <Cta href="/features" variant="ghost" id="hero-features">Explore Features</Cta>
+              </div>
+              <p data-testid="text-hero-offer" className="mt-4 text-sm font-semibold text-foreground">30-day trial. Free standard setup and onboarding training. No credit card required.</p>
+              <p data-testid="text-hero-clarify" className="mt-1 text-xs text-foreground/70">Request a demo or trial setup. This request does not start a trial.</p>
+              <p data-testid="text-hero-origin" className="mt-4 font-mono text-xs uppercase tracking-[0.14em] text-foreground/70">Built from real permit-expediting experience.</p>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      <section className="border-b border-border bg-muted">
+        <div className="mx-auto max-w-7xl px-5 md:px-8 py-12 md:py-16 grid lg:grid-cols-[0.8fr_1.2fr] gap-10 items-center">
+          <Reveal><Eyebrow>Inside the workspace</Eyebrow><H2>Every project, permit and inspection on one screen.</H2>
+            <p className="mt-5 text-foreground/80 max-w-md">The dashboard your team opens each morning: what is open, what is waiting on the jurisdiction, and who owns the next step.</p></Reveal>
+          <Reveal delay={0.1}><DashboardMock /></Reveal>
         </div>
       </section>
 

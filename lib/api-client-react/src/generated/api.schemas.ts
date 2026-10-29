@@ -101,6 +101,20 @@ export interface InquiryReceipt {
   message: string;
 }
 
+export type HeroEventInputEventName = typeof HeroEventInputEventName[keyof typeof HeroEventInputEventName];
+
+
+export const HeroEventInputEventName = {
+  hero_video_start: 'hero_video_start',
+  hero_video_half: 'hero_video_half',
+  hero_video_complete: 'hero_video_complete',
+  hero_trial_click: 'hero_trial_click',
+} as const;
+
+export interface HeroEventInput {
+  eventName: HeroEventInputEventName;
+}
+
 export type MarketingEventInputEventName = typeof MarketingEventInputEventName[keyof typeof MarketingEventInputEventName];
 
 
