@@ -3,19 +3,21 @@ import { Shell } from '@/components/layout';
 import { Eyebrow, Reveal, Section } from '@/components/bits';
 import { mocks } from '@/components/product-ui';
 import { groups } from '@/lib/content';
+import { PaperworkTimeSavers } from '@/components/paperwork-time-savers';
 import { FinalCta } from '@/pages/home';
 
 export default function Features() {
   return (
     <Shell>
-      <Seo title="Features | Permits Manager" description="Manage the work, organize documents, coordinate people, and track fees and reporting for permitting operations." />
+      <Seo title="Features | Permits Manager" description="Prepare permit paperwork faster: annotate and sign PDFs, auto-fill supported application forms, organize documents, coordinate people, and track fees and reporting for permitting operations." />
       <section className="grid-paper border-b border-border"><div className="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
         <Reveal><Eyebrow>Features</Eyebrow><h1 className="font-display text-5xl md:text-7xl font-extrabold leading-[1] max-w-4xl">Everything a permit touches, in one place.</h1>
-          <p className="mt-6 text-lg max-w-2xl text-foreground/85">Four groups of capability, organized around how permitting work actually moves.</p></Reveal>
+          <p className="mt-6 text-lg max-w-2xl text-foreground/85">Prepare documents faster, then manage everything around them. Four groups of capability, organized around how permitting work actually moves.</p></Reveal>
         <nav aria-label="Feature groups" className="mt-8 flex flex-wrap gap-2">
           {groups.map((g, i) => <a key={g.t} href={`#g${i}`} className="border-2 border-foreground bg-card px-3 py-1.5 text-sm font-semibold hover:bg-secondary">{g.t}</a>)}
         </nav>
       </div></section>
+      <PaperworkTimeSavers ctaHref="/demo" ctaLabel="Request a Demo / Free Trial" id="features-paperwork" />
       {groups.map((g, i) => {
         const M = g.mock ? mocks[g.mock] : null;
         return (

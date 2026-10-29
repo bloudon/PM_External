@@ -35,8 +35,8 @@ const contractors: Cfg = {
   caps: [
     { t: 'Project visibility', d: 'See every project with its permits and status together.' },
     { t: 'Assignments', d: 'Assign permit tasks and follow-ups to the right person.' },
-    { t: 'Document organization', d: 'Keep files attached to the permit they support.' },
-    { t: 'Jurisdiction information', d: 'Keep jurisdiction details with the projects that depend on them.' },
+    { t: 'PDF markup and signatures', d: 'Annotate permit PDFs, add signatures, then save and share them directly in the application.' },
+    { t: 'Automatic application filling', d: 'Use project data to fill application forms for supported saved jurisdictions, then save them with the project. Coverage is growing.' },
     { t: 'Inspection follow-up', d: 'Track inspections and the work that remains after each one.' },
   ],
   examples: [
@@ -72,6 +72,8 @@ const expediters: Cfg = {
   ],
   caps: [
     { t: 'Multiple clients', d: 'Import your existing contractors and manage their projects and permits together.' },
+    { t: 'PDF markup and signatures', d: 'Mark up and annotate permit PDFs, add signatures, and save and share the updated files without leaving the application.' },
+    { t: 'Automatic application filling', d: 'Fill supported saved-jurisdiction application forms with project data and save them with the project. The supported list is growing.' },
     { t: 'Contractor requests', d: 'Keep client requests tied to the work they affect.' },
     { t: 'Staff responsibilities', d: 'Assign work and see who has the next step.' },
     { t: 'Contractor-specific pricing', d: 'Apply the pricing that fits each contractor.' },

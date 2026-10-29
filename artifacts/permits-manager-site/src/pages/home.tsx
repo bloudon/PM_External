@@ -9,6 +9,7 @@ import { Seo } from '@/components/seo';
 import { Shell } from '@/components/layout';
 import { Cta, Eyebrow, H2, Reveal, Section } from '@/components/bits';
 import { DashboardMock } from '@/components/product-ui';
+import { PaperworkTimeSavers } from '@/components/paperwork-time-savers';
 import { JobsitePhoto } from '@/components/jobsite-photo';
 import { groups, steps } from '@/lib/content';
 
@@ -19,7 +20,8 @@ const benefits = [
 ];
 const faqs = [
   { q: 'Is Permits Manager software or a filing service?', a: 'It is software. Your team, or your expediting firm, uses it to manage projects, permits, inspections, documents and assignments. It does not file permits on your behalf.' },
-  { q: 'Which jurisdictions does it support?', a: 'You record the jurisdiction on each project and permit, so you can track work in the jurisdictions you actually deal with.' },
+  { q: 'Which jurisdictions does it support?', a: 'You record the jurisdiction on each project and permit, so you can track work in any jurisdiction you deal with. Automatic form filling is available for supported jurisdictions you have saved, and that list is growing.' },
+  { q: 'Can we mark up and sign permit PDFs?', a: 'Yes. You can annotate permit PDFs and add signatures directly inside the app, then save the updated document and share it.' },
   { q: 'Can we bring in existing contractor records?', a: 'Yes, you can import your existing contractors.' },
   { q: 'How does setup work?', a: 'We offer a guided walkthrough to get you up and running fast. Request a demo or access, tell us about your company, and we will follow up to help you get started.' },
   { q: 'What does the QuickBooks support cover?', a: 'QuickBooks can pull in your accounts and fees for a quick, painless setup. Supported QuickBooks Online exports are also available for billing information.' },
@@ -62,6 +64,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <PaperworkTimeSavers ctaHref="/features#g1" ctaLabel="See document features" id="home-paperwork" />
 
       <section className="border-b border-border bg-muted">
         <div className="mx-auto max-w-7xl px-5 md:px-8 py-12 md:py-16 grid lg:grid-cols-[0.8fr_1.2fr] gap-10 items-center">

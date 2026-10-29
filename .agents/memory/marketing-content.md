@@ -23,6 +23,13 @@ Describe onboarding as a guided walkthrough to get users up and running fast. Ex
 
 **How to apply:** Keep marketing setup and FAQ copy consistent with these facts; do not hedge contractor imports as unconfirmed or describe QuickBooks as export-only. Do not infer file formats, sync behavior, or other import capabilities.
 
+# Owner-confirmed document time savers
+The owner confirmed that users can mark up and annotate permit PDFs, including adding signatures, directly in the application, then save and share them. Permitting application forms for supported saved jurisdictions can be automatically filled using project data and saved with the project. The supported jurisdiction list is growing.
+
+**Why:** The owner identified these as major time savers that should be emphasized to communicate more efficient permit processing.
+
+**How to apply:** Promote both capabilities prominently. Qualify automatic filling as available for supported saved jurisdictions, not every jurisdiction or form. Do not infer signature verification, legal e-signature status, automatic filing with authorities, or quantified time savings.
+
 # Demo and trial request funnel
 The owner approved routing the homepage demo/free-trial CTA to the existing demo request form for now. They said, “We'll structure the funnel to flow to our onboarding for trial in the application later.”
 
