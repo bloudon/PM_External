@@ -6,6 +6,7 @@ import { JobsitePhoto } from '@/components/jobsite-photo';
 import { Link } from 'wouter';
 import { ArrowUpRight } from 'lucide-react';
 import { FinalCta } from '@/pages/home';
+import { tradePaths } from '@/lib/landing-routes';
 
 type Mk = keyof typeof mocks;
 interface Cfg {
@@ -42,8 +43,8 @@ const contractors: Cfg = {
     { t: 'Inspection follow-up', d: 'Track inspections and the work that remains after each one.' },
   ],
   examples: [
-    { link: '/solutions/contractors/roofing', t: 'Roofing, windows, and other repeat-job contractors', d: 'Recurring permit workflows across many customer jobs.', flow: 'A coordinator opens the permits list each morning, sees which jobs are waiting on approval or need a correction, and assigns the follow-up before crews are scheduled.', photo: 'roofing', alt: 'A worker fastening shingles on a residential roof.' },
-    { link: '/solutions/contractors/hvac', t: 'HVAC, electrical, plumbing, and fire-protection contractors', d: 'Trade permits, supporting documents, and inspections.', flow: 'Office staff attach the application and supporting documents to the trade permit, then track the inspection and the next step once a result comes back.', photo: 'electrical', alt: 'Technician working inside an electrical control panel.' },
+    { link: tradePaths.roofing, t: 'Roofing, windows, and other repeat-job contractors', d: 'Recurring permit workflows across many customer jobs.', flow: 'A coordinator opens the permits list each morning, sees which jobs are waiting on approval or need a correction, and assigns the follow-up before crews are scheduled.', photo: 'roofing', alt: 'A worker fastening shingles on a residential roof.' },
+    { link: tradePaths.hvac, t: 'HVAC, electrical, plumbing, and fire-protection contractors', d: 'Trade permits, supporting documents, and inspections.', flow: 'Office staff attach the application and supporting documents to the trade permit, then track the inspection and the next step once a result comes back.', photo: 'electrical', alt: 'Technician working inside an electrical control panel.' },
     { t: 'General contractors and remodelers', d: 'Multiple permits and responsibilities within and across projects.', flow: 'A project manager reviews one project with its building and trade permits together, sees who owns each open item, and checks what is holding up the next inspection.', photo: 'windows', alt: 'Window installer working on a frame from inside a building.' },
   ],
   walk: [
@@ -108,8 +109,8 @@ function SolutionPage({ c }: { c: Cfg }) {
               {c.bt === 'contractor' && (
                 <div className="mt-6 flex flex-wrap items-center gap-2" data-testid="nav-trade-links">
                   <span className="font-mono text-xs uppercase tracking-[0.14em] text-foreground/70 mr-1">By trade</span>
-                  {[['roofing', 'Roofing'], ['windows-and-doors', 'Windows and Doors'], ['hvac', 'HVAC']].map(([s, l]) => (
-                    <Link key={s} href={`/solutions/contractors/${s}`} data-testid={`link-solution-trade-${s}`} className="inline-flex items-center gap-1 border-2 border-foreground bg-card px-3 py-1.5 text-sm font-semibold hover:bg-secondary">{l} <ArrowUpRight className="h-3.5 w-3.5" aria-hidden /></Link>
+                  {([['roofing', 'Roofing'], ['windows-and-doors', 'Windows and Doors'], ['hvac', 'HVAC']] as const).map(([s, l]) => (
+                    <Link key={s} href={tradePaths[s]} data-testid={`link-solution-trade-${s}`} className="inline-flex items-center gap-1 border-2 border-foreground bg-card px-3 py-1.5 text-sm font-semibold hover:bg-secondary">{l} <ArrowUpRight className="h-3.5 w-3.5" aria-hidden /></Link>
                   ))}
                 </div>
               )}</Reveal>

@@ -42,3 +42,10 @@ The owner approved routing the homepage demo/free-trial CTA to the existing demo
 **Why:** Automatic application signup and trial activation are not part of the current marketing-site funnel.
 
 **How to apply:** Describe this as a demo/free-trial request, not immediate trial signup. The owner explicitly removed the public sentence “This request does not start a trial”; do not restore it. Do not restore “Your trial begins at signup” or promise automatic activation until the application flow is confirmed ready.
+
+# Landing-page URL preference
+Use simple root-level contractor landing-page URLs rather than nesting them under solutions/contractors.
+
+**Why:** The owner explicitly asked to remove those path prefixes and use short landing slugs.
+
+**How to apply:** Keep future contractor landing URLs short and follow the owner's approved spelling and capitalization. Preserve compatibility for old shared links when changing a public path.

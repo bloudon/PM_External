@@ -8,6 +8,7 @@ import {
   Route,
   Switch,
   useLocation,
+  Redirect,
   Router as WouterRouter,
 } from 'wouter';
 
@@ -21,6 +22,12 @@ import How from '@/pages/how';
 import About from '@/pages/about';
 import { DemoPage, SignupPage, ContactPage } from '@/pages/forms-pages';
 import { PrivacyPage, TermsPage } from '@/pages/legal';
+import { contractorPath, tradePaths, legacyLandingPaths, landingRedirectTarget } from '@/lib/landing-routes';
+
+function LegacyLandingRedirect({ path }: { path: string }) {
+  const target = landingRedirectTarget(path, window.location.search, window.location.hash);
+  return target ? <Redirect to={target} replace /> : <NotFound />;
+}
 
 function Router() {
   return (
@@ -29,10 +36,13 @@ function Router() {
     <RoutedErrorBoundary>
       <Switch>
         <Route path="/" component={Home} />
-        <Route path="/solutions/contractors/roofing" component={RoofingPage} />
-        <Route path="/solutions/contractors/windows-and-doors" component={WindowsDoorsPage} />
-        <Route path="/solutions/contractors/hvac" component={HvacPage} />
-        <Route path="/solutions/contractors" component={ContractorsPage} />
+        <Route path={tradePaths.roofing} component={RoofingPage} />
+        <Route path={tradePaths['windows-and-doors']} component={WindowsDoorsPage} />
+        <Route path={tradePaths.hvac} component={HvacPage} />
+        <Route path={contractorPath} component={ContractorsPage} />
+        {Object.keys(legacyLandingPaths).map((path) => (
+          <Route key={path} path={path}><LegacyLandingRedirect path={path} /></Route>
+        ))}
         <Route path="/solutions/permit-expediters" component={ExpeditersPage} />
         <Route path="/features" component={Features} />
         <Route path="/how-it-works" component={How} />

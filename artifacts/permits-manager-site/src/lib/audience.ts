@@ -1,3 +1,5 @@
+import { contractorPath, tradePaths, legacyLandingPaths } from './landing-routes.ts';
+
 export type BT = 'contractor' | 'permit_expeditor';
 export const industries = [
   { value: 'roofing', label: 'Roofing' },
@@ -26,11 +28,11 @@ export function parseBt(search: string): BT | '' {
 
 /** Audience implied by the current solution page, as a query string. */
 export function audienceQuery(path: string, search = ''): string {
-  if (path === '/solutions/contractors' || path.startsWith('/solutions/contractors/')) {
-    const slug = path.slice('/solutions/contractors/'.length);
-    const industry = industries.find((x) => x.value !== 'other' && x.value === slug)?.value ?? '';
-    return requestQuery('contractor', industry);
-  }
+  const canonicalPath = Object.hasOwn(legacyLandingPaths, path) ? legacyLandingPaths[path] : path;
+  if (canonicalPath === contractorPath) return requestQuery('contractor', '');
+  const trade = (Object.keys(tradePaths) as (keyof typeof tradePaths)[])
+    .find((slug) => tradePaths[slug] === canonicalPath);
+  if (trade) return requestQuery('contractor', trade);
   if (path === '/solutions/permit-expediters') return '?businessType=permit_expeditor';
   if (path === '/demo' || path === '/signup') {
     return requestQuery(parseBt(search), parseIndustry(search));

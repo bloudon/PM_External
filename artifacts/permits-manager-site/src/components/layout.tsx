@@ -6,16 +6,17 @@ import { BrandLogo } from '@/components/brand-logo';
 import { useMarketingEvent } from '@/lib/marketing';
 import { Cta } from '@/components/bits';
 import { audienceQuery } from '@/lib/audience';
+import { contractorPath, tradePaths } from '@/lib/landing-routes';
 
 const SHOW_PRICING = false; // enable once pricing and packaging are approved
 const solutions = [
-  { href: '/solutions/contractors', t: 'For Contractors', d: 'Run permitting in-house' },
+  { href: contractorPath, t: 'For Contractors', d: 'Run permitting in-house' },
   { href: '/solutions/permit-expediters', t: 'For Permit Expediters', d: 'Manage many clients' },
 ];
 const tradeLinks = [
-  { href: '/solutions/contractors/roofing', t: 'Roofing' },
-  { href: '/solutions/contractors/windows-and-doors', t: 'Windows and Doors' },
-  { href: '/solutions/contractors/hvac', t: 'HVAC' },
+  { href: tradePaths.roofing, t: 'Roofing' },
+  { href: tradePaths['windows-and-doors'], t: 'Windows and Doors' },
+  { href: tradePaths.hvac, t: 'HVAC' },
 ];
 const nav = [
   { href: '/features', t: 'Features' },
@@ -114,7 +115,7 @@ export function Footer() {
         <div><p className={h}>Product</p><div className={col}>
           <Link href="/features">Features</Link><Link href="/how-it-works">How It Works</Link><Link href="/about">About</Link></div></div>
         <div><p className={h}>Solutions</p><div className={col}>
-          <Link href="/solutions/contractors">For Contractors</Link>{tradeLinks.map((s) => <Link key={s.href} href={s.href} className="pl-3 text-background/80">{s.t}</Link>)}<Link href="/solutions/permit-expediters">For Permit Expediters</Link>
+          <Link href={contractorPath}>For Contractors</Link>{tradeLinks.map((s) => <Link key={s.href} href={s.href} className="pl-3 text-background/80">{s.t}</Link>)}<Link href="/solutions/permit-expediters">For Permit Expediters</Link>
           <Link href={`/demo${q}`} data-testid="link-footer-demo">Request a Demo / Free Trial</Link><Link href={`/signup${q}`} data-testid="link-footer-access">Request Trial Setup</Link></div></div>
         <div><p className={h}>Company</p><div className={col}>
           <a href={APP_URL} onClick={() => sendEvent('cta_sign_in')}>Sign In</a><Link href="/contact">Contact</Link>

@@ -6,6 +6,7 @@ import { Cta, Eyebrow, H2, Reveal, Section } from '@/components/bits';
 import { mocks } from '@/components/product-ui';
 import { JobsitePhoto } from '@/components/jobsite-photo';
 import { FinalCta } from '@/pages/home';
+import { contractorPath, tradePaths } from '@/lib/landing-routes';
 
 type Mk = keyof typeof mocks;
 export type TradeSlug = 'roofing' | 'windows-and-doors' | 'hvac';
@@ -149,7 +150,7 @@ function TradePage({ t }: { t: Trade }) {
           <div>
             <Reveal>
               <nav aria-label="Breadcrumb" className="mb-5 font-mono text-xs uppercase tracking-[0.14em] text-foreground/70">
-                <Link href="/solutions/contractors" data-testid="link-breadcrumb-contractors" className="underline underline-offset-4 hover:text-primary">For Contractors</Link>
+                <Link href={contractorPath} data-testid="link-breadcrumb-contractors" className="underline underline-offset-4 hover:text-primary">For Contractors</Link>
                 <span className="mx-2" aria-hidden>/</span><span className="text-foreground">{t.label}</span>
               </nav>
               <Eyebrow>{t.label} contractors &middot; {t.tag}</Eyebrow>
@@ -268,9 +269,9 @@ function TradePage({ t }: { t: Trade }) {
         <div className="mx-auto max-w-7xl px-5 md:px-8 py-10 flex flex-wrap items-center gap-x-8 gap-y-3">
           <p className="font-mono text-xs uppercase tracking-[0.14em] text-foreground/70">Other trades</p>
           {others.map((o) => (
-            <Link key={o.slug} href={`/solutions/contractors/${o.slug}`} data-testid={`link-trade-${o.slug}`} className="inline-flex items-center gap-1 font-semibold hover:text-primary">{o.label} <ArrowUpRight className="h-4 w-4" aria-hidden /></Link>
+            <Link key={o.slug} href={tradePaths[o.slug]} data-testid={`link-trade-${o.slug}`} className="inline-flex items-center gap-1 font-semibold hover:text-primary">{o.label} <ArrowUpRight className="h-4 w-4" aria-hidden /></Link>
           ))}
-          <Link href="/solutions/contractors" data-testid="link-trade-all-contractors" className="inline-flex items-center gap-1 font-semibold hover:text-primary">All contractors <ArrowUpRight className="h-4 w-4" aria-hidden /></Link>
+          <Link href={contractorPath} data-testid="link-trade-all-contractors" className="inline-flex items-center gap-1 font-semibold hover:text-primary">All contractors <ArrowUpRight className="h-4 w-4" aria-hidden /></Link>
           <Link href="/solutions/permit-expediters" data-testid="link-trade-expediters" className="inline-flex items-center gap-1 font-semibold hover:text-primary">Permit expediters <ArrowUpRight className="h-4 w-4" aria-hidden /></Link>
         </div>
       </section>

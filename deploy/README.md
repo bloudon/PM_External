@@ -360,11 +360,31 @@ echo
 
 Hard-refresh the website, open each trade page directly, and check its request link:
 
-- `https://permitsmanager.com/solutions/contractors/roofing`
-- `https://permitsmanager.com/solutions/contractors/windows-and-doors`
-- `https://permitsmanager.com/solutions/contractors/hvac`
+- `https://permitsmanager.com/roofing`
+- `https://permitsmanager.com/Windows-doors`
+- `https://permitsmanager.com/HVAC`
+- `https://permitsmanager.com/Contractors` (general contractor page)
 
 The request should preselect Contractor and the matching industry. Any real SMTP delivery test requires owner approval; automated tests use a stub transport and do not send live messages. No application onboarding, active-job, or paid-conversion measurement is added by these pages.
+
+### Short landing URL update only
+
+The primary paths use the exact capitalization above. The four old `/solutions/contractors` URLs still load through the existing SPA fallback and then forward in the browser to their short counterparts, preserving query strings and fragments. These are client-side replacements, not HTTP 301 redirects. The permit-expediter page remains `/solutions/permit-expediters`.
+
+If the earlier industry-form update is already installed, this route-only change requires only a **frontend rebuild**. Push the commits to GitHub first, confirm a clean VPS checkout, and run:
+
+```bash
+cd /home/administrator/apps/PM_External &&
+git pull --ff-only origin main &&
+export NVM_DIR="$HOME/.local/share/pm-external-nvm" &&
+. "$NVM_DIR/nvm.sh" --no-use &&
+nvm use 24 &&
+pnpm install --frozen-lockfile &&
+BASE_PATH=/ NODE_ENV=production VITE_APP_URL=https://app.permitsmanager.com \
+  pnpm --filter @workspace/permits-manager-site build
+```
+
+No Nginx reload, API restart, or server-side redirect configuration is needed for this URL-only update. If the prior industry-form changes have not reached the VPS yet, use the earlier both-package build and marketing-API restart instructions as well. Hard-refresh and check the four short URLs and the old links in a browser; `curl` alone cannot execute client-side forwarding.
 
 ### E. Verify real delivery before declaring forms live
 

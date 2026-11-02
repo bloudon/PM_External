@@ -4,6 +4,7 @@ import { IntroVideo } from '@/components/intro-video';
 import { trackHeroEvent } from '@/lib/hero-analytics';
 import { useMarketingEvent } from '@/lib/marketing';
 import { audienceQuery } from '@/lib/audience';
+import { contractorPath, tradePaths } from '@/lib/landing-routes';
 import { Eye, Link2, Users, ArrowUpRight, ClipboardList, FolderOpen, UserCheck, Receipt, CheckSquare, ArrowRight } from 'lucide-react';
 import { Seo } from '@/components/seo';
 import { Shell } from '@/components/layout';
@@ -33,10 +34,10 @@ const fit = [
   'More than one person needs to know what is happening next.',
 ];
 const industries = [
-  { id: 'roofing', h: '/solutions/contractors/roofing', t: 'Roofing' },
-  { id: 'windows-and-doors', h: '/solutions/contractors/windows-and-doors', t: 'Windows and Doors' },
-  { id: 'hvac', h: '/solutions/contractors/hvac', t: 'HVAC' },
-  { id: 'contractors', h: '/solutions/contractors', t: 'Other contractors' },
+  { id: 'roofing', h: tradePaths.roofing, t: 'Roofing' },
+  { id: 'windows-and-doors', h: tradePaths['windows-and-doors'], t: 'Windows and Doors' },
+  { id: 'hvac', h: tradePaths.hvac, t: 'HVAC' },
+  { id: 'contractors', h: contractorPath, t: 'Other contractors' },
   { id: 'permit-expediters', h: '/solutions/permit-expediters', t: 'Permit expediters', alt: true },
 ];
 const icons = [ClipboardList, FolderOpen, UserCheck, Receipt];

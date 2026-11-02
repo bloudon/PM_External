@@ -32,8 +32,20 @@ test('trade pages infer only known industries with contractor attribution', () =
   for (const industry of ['roofing', 'windows-and-doors', 'hvac']) {
     assert.equal(audienceQuery(`/solutions/contractors/${industry}`), `?businessType=contractor&industry=${industry}`);
   }
-  assert.equal(audienceQuery('/solutions/contractors/unknown'), '?businessType=contractor');
+  assert.equal(audienceQuery('/solutions/contractors/unknown'), '');
   assert.equal(audienceQuery('/solutions/contractors-malicious'), '');
+});
+
+test('short landing routes preserve their business and industry context', () => {
+  assert.equal(audienceQuery('/Contractors'), '?businessType=contractor');
+  for (const [path, industry] of [
+    ['/roofing', 'roofing'], ['/HVAC', 'hvac'], ['/Windows-doors', 'windows-and-doors'],
+  ]) {
+    assert.equal(audienceQuery(path), `?businessType=contractor&industry=${industry}`);
+    assert.equal(audienceQuery(path, '?industry=other&businessType=permit_expeditor'), `?businessType=contractor&industry=${industry}`);
+  }
+  assert.equal(audienceQuery('/roofing/unknown'), '');
+  assert.equal(audienceQuery('/Contractors-malicious'), '');
 });
 
 test('form navigation carries editable allowlisted industry but not unrelated query data', () => {
