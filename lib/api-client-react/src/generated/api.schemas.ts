@@ -25,6 +25,16 @@ export const BusinessType = {
   permit_expeditor: 'permit_expeditor',
 } as const;
 
+export type Industry = typeof Industry[keyof typeof Industry];
+
+
+export const Industry = {
+  roofing: 'roofing',
+  'windows-and-doors': 'windows-and-doors',
+  hvac: 'hvac',
+  other: 'other',
+} as const;
+
 export interface DemoRequestInput {
   /**
      * @minLength 2
@@ -38,6 +48,7 @@ export interface DemoRequestInput {
      */
   companyName: string;
   businessType: BusinessType;
+  industry?: Industry;
   /** @maxLength 2000 */
   challenge?: string;
 }
@@ -67,6 +78,7 @@ export interface AccessRequestInput {
      */
   companyName: string;
   businessType: BusinessType;
+  industry?: Industry;
   /** @maxLength 40 */
   phone?: string;
   monthlyPermitVolume: AccessRequestInputMonthlyPermitVolume;

@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { BusinessType } from './businessType';
+import type { Industry } from './industry';
 
 export interface DemoRequestInput {
   /**
@@ -20,6 +21,7 @@ export interface DemoRequestInput {
      */
   companyName: string;
   businessType: BusinessType;
+  industry?: Industry;
   /** @maxLength 2000 */
   challenge?: string;
 }

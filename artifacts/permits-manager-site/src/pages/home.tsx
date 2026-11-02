@@ -23,7 +23,7 @@ const faqs = [
   { q: 'Which jurisdictions does it support?', a: 'You record the jurisdiction on each project and permit, so you can track work in any jurisdiction you deal with. Automatic form filling is available for supported jurisdictions you have saved, and that list is growing.' },
   { q: 'Can we mark up and sign permit PDFs?', a: 'Yes. You can annotate permit PDFs and add signatures directly inside the app, then save the updated document and share it.' },
   { q: 'Can we bring in existing contractor records?', a: 'Yes, you can import your existing contractors.' },
-  { q: 'How does setup work?', a: 'We offer a guided walkthrough to get you up and running fast. Request a demo or access, tell us about your company, and we will follow up to help you get started.' },
+  { q: 'How does setup work?', a: 'We offer a guided walkthrough to get you up and running fast. Send a demo, trial setup or access request, tell us about your company, and we will follow up to arrange setup and onboarding training.' },
   { q: 'What does the QuickBooks support cover?', a: 'QuickBooks can pull in your accounts and fees for a quick, painless setup. Supported QuickBooks Online exports are also available for billing information.' },
   { q: 'How do I get pricing?', a: 'Request a demo and ask for a pricing discussion. We will talk through your team and what you need.' },
 ];
@@ -31,6 +31,13 @@ const fit = [
   'Your team handles permitting regularly across multiple active jobs.',
   'Status updates, documents, and follow-up are spread across spreadsheets and inboxes.',
   'More than one person needs to know what is happening next.',
+];
+const industries = [
+  { id: 'roofing', h: '/solutions/contractors/roofing', t: 'Roofing' },
+  { id: 'windows-and-doors', h: '/solutions/contractors/windows-and-doors', t: 'Windows and Doors' },
+  { id: 'hvac', h: '/solutions/contractors/hvac', t: 'HVAC' },
+  { id: 'contractors', h: '/solutions/contractors', t: 'Other contractors' },
+  { id: 'permit-expediters', h: '/solutions/permit-expediters', t: 'Permit expediters', alt: true },
 ];
 const icons = [ClipboardList, FolderOpen, UserCheck, Receipt];
 
@@ -58,10 +65,26 @@ export default function Home() {
                 <Cta href="/features" variant="ghost" id="hero-features">Explore Features</Cta>
               </div>
               <p data-testid="text-hero-offer" className="mt-4 text-sm font-semibold text-foreground">30-day trial. Free standard setup and onboarding training. No credit card required.</p>
-              <p data-testid="text-hero-clarify" className="mt-1 text-xs text-foreground/70">Request a demo or trial setup.</p>
+              <p data-testid="text-hero-clarify" className="mt-1 text-xs text-foreground/70">Send a request and we follow up to arrange your demo or trial setup.</p>
               <p data-testid="text-hero-origin" className="mt-4 font-mono text-xs uppercase tracking-[0.14em] text-foreground/70">Built from real permit-expediting experience.</p>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="industry-heading" className="border-b-2 border-foreground bg-card">
+        <div className="mx-auto max-w-7xl px-5 md:px-8 py-6 md:py-7 grid lg:grid-cols-[auto_1fr] gap-x-8 gap-y-4 items-center">
+          <h2 id="industry-heading" className="font-display text-xl md:text-2xl font-bold leading-tight">Built for your permitting workflow</h2>
+          <ul className="flex flex-wrap gap-2.5">
+            {industries.map((x) => (
+              <li key={x.h}>
+                <Link href={x.h} data-testid={`link-industry-${x.id}`}
+                  className={`group inline-flex items-center gap-1.5 border-2 border-foreground px-3.5 py-2 text-sm font-semibold transition-transform hover:-translate-y-0.5 ${x.alt ? 'bg-primary text-primary-foreground' : 'bg-background hover:bg-secondary'}`}>
+                  {x.t} <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
@@ -72,28 +95,6 @@ export default function Home() {
           <Reveal><Eyebrow>Inside the workspace</Eyebrow><H2>Every project, permit and inspection on one screen.</H2>
             <p className="mt-5 text-foreground/80 max-w-md">The dashboard your team opens each morning: what is open, what is waiting on the jurisdiction, and who owns the next step.</p></Reveal>
           <Reveal delay={0.1}><DashboardMock /></Reveal>
-        </div>
-      </section>
-
-      <section className="border-b border-border">
-        <div className="mx-auto max-w-7xl px-5 md:px-8 py-10 md:py-12">
-          <Reveal><Eyebrow>Choose your path</Eyebrow><h2 className="font-display text-2xl md:text-3xl font-bold leading-tight max-w-3xl">Built for in-house permitting teams and permit expediting firms.</h2></Reveal>
-          <div className="mt-7 grid md:grid-cols-2 gap-6">
-          {[
-            { h: '/solutions/contractors', t: 'Manage Permitting In-House', d: 'For permit coordinators, office managers, operations and project managers at specialty and general contractors.', c: 'bg-card' },
-            { h: '/solutions/permit-expediters', t: 'Run a Permit Expediting Business', d: 'For owners, expediters, coordinators and accounting staff managing permits for multiple contractor clients.', c: 'bg-primary text-primary-foreground' },
-          ].map((a, i) => (
-            <Reveal key={a.h} delay={i * 0.08}>
-              <Link href={a.h} data-testid={`card-audience-${i}`} className={`group flex h-full items-start justify-between gap-6 border-2 border-foreground p-6 md:p-8 shadow-[6px_6px_0_0_hsl(var(--foreground))] transition-transform hover:-translate-y-1 ${a.c}`}>
-                <div>
-                  <h3 className="font-display text-2xl md:text-3xl font-bold">{a.t}</h3>
-                  <p className={`mt-3 ${i ? 'text-primary-foreground/90' : 'text-foreground/80'}`}>{a.d}</p>
-                </div>
-                <ArrowUpRight className="h-8 w-8 shrink-0 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" aria-hidden />
-              </Link>
-            </Reveal>
-          ))}
-          </div>
         </div>
       </section>
 
@@ -183,7 +184,7 @@ export default function Home() {
                 </li>
               </Reveal>
             ))}
-            <Reveal><div className="pt-6"><Cta href="/demo" id="fit-demo" arrow>Request a Demo</Cta></div></Reveal>
+            <Reveal><div className="pt-6"><Cta href="/demo" id="fit-demo" arrow>Request a Demo / Free Trial</Cta></div></Reveal>
           </ul>
         </div>
       </Section>
@@ -198,7 +199,7 @@ export default function Home() {
             </div>
           ))}
         </dl>
-        <div className="mt-6"><Cta href="/demo" id="faq-demo" arrow>Request a Demo</Cta></div>
+        <div className="mt-6"><Cta href="/demo" id="faq-demo" arrow>Request a Demo / Free Trial</Cta></div>
       </Section>
 
       <FinalCta />
@@ -206,16 +207,17 @@ export default function Home() {
   );
 }
 
-export function FinalCta({ title = 'Bring your permitting operation into one workspace.', bt }: { title?: string; bt?: string }) {
+export function FinalCta({ title = 'Bring your permitting operation into one workspace.', bt, q: fixedQ }: { title?: string; bt?: string; q?: string }) {
   const [loc] = useLocation();
   const search = useSearch();
-  const q = bt ? `?businessType=${bt}` : audienceQuery(loc, search);
+  const q = fixedQ ?? (audienceQuery(loc, search) || (bt ? `?businessType=${bt}` : ''));
   return (
     <section className="bg-primary text-primary-foreground">
       <div className="mx-auto max-w-7xl px-5 md:px-8 py-16 md:py-24">
         <Reveal>
           <h2 className="font-display text-4xl md:text-6xl font-extrabold leading-[1] max-w-4xl">{title}</h2>
-          <div className="mt-10 flex flex-wrap gap-4"><Cta href={`/demo${q}`} variant="light" id="final-demo" arrow>Request a Demo</Cta><Cta href={`/signup${q}`} variant="line" id="final-get-started">Get Started</Cta></div>
+          <div className="mt-10 flex flex-wrap gap-4"><Cta href={`/demo${q}`} variant="light" id="final-demo" arrow>Request a Demo / Free Trial</Cta><Cta href={`/signup${q}`} variant="line" id="final-get-started">Request Trial Setup</Cta></div>
+          <p className="mt-5 text-sm text-primary-foreground/85">30-day trial. Free standard setup and onboarding training. No credit card required. We follow up on every request.</p>
         </Reveal>
       </div>
     </section>

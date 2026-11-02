@@ -12,6 +12,11 @@ const solutions = [
   { href: '/solutions/contractors', t: 'For Contractors', d: 'Run permitting in-house' },
   { href: '/solutions/permit-expediters', t: 'For Permit Expediters', d: 'Manage many clients' },
 ];
+const tradeLinks = [
+  { href: '/solutions/contractors/roofing', t: 'Roofing' },
+  { href: '/solutions/contractors/windows-and-doors', t: 'Windows and Doors' },
+  { href: '/solutions/contractors/hvac', t: 'HVAC' },
+];
 const nav = [
   { href: '/features', t: 'Features' },
   { href: '/how-it-works', t: 'How It Works' },
@@ -56,6 +61,10 @@ export function Header() {
                       <span className="block text-xs text-muted-foreground">{s.d}</span>
                     </Link>
                   ))}
+                  <p className="px-3 pt-3 pb-1 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">By trade</p>
+                  {tradeLinks.map((s) => (
+                    <Link key={s.href} href={s.href} className="block px-3 py-2 text-sm font-semibold hover:bg-secondary" data-testid={`link-nav-trade-${s.href.split('/').pop()}`}>{s.t}</Link>
+                  ))}
                 </div>
               </div>
             )}
@@ -68,7 +77,7 @@ export function Header() {
         </nav>
         <div className="ml-auto flex items-center gap-2">
           <SignIn />
-          <div className="hidden md:flex items-center gap-2"><Cta href={`/signup${q}`} variant="ghost" id="header-get-started">Get Started</Cta><Cta href={`/demo${q}`} id="header-demo">Request a Demo</Cta></div>
+          <div className="hidden md:flex items-center gap-2"><Cta href={`/signup${q}`} variant="ghost" id="header-get-started">Trial Setup</Cta><Cta href={`/demo${q}`} id="header-demo">Request a Demo</Cta></div>
           <button className="xl:hidden p-2 border border-foreground/30 rounded-md" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open}
             onClick={() => setOpen(!open)} data-testid="button-menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -79,9 +88,10 @@ export function Header() {
         <nav className="xl:hidden border-t border-border bg-background px-5 py-4 grid gap-1" aria-label="Mobile">
           <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground pt-1">Solutions</p>
           {solutions.map((s) => <Link key={s.href} href={s.href} className="py-2 font-semibold">{s.t}</Link>)}
+          <div className="flex flex-wrap gap-x-4 gap-y-1 pb-1 text-sm">{tradeLinks.map((s) => <Link key={s.href} href={s.href} className="py-1 font-medium underline underline-offset-4">{s.t}</Link>)}</div>
           <p className="font-mono text-[11px] uppercase tracking-widest text-muted-foreground pt-2">Explore</p>
           {nav.map((n) => <Link key={n.href} href={n.href} className="py-2 font-semibold">{n.t}</Link>)}
-          <div className="pt-3 flex flex-wrap gap-3"><Cta href={`/demo${q}`} id="mobile-demo">Request a Demo</Cta><Cta href={`/signup${q}`} variant="ghost" id="mobile-get-started">Get Started</Cta></div>
+          <div className="pt-3 flex flex-wrap gap-3"><Cta href={`/demo${q}`} id="mobile-demo">Request a Demo / Free Trial</Cta><Cta href={`/signup${q}`} variant="ghost" id="mobile-get-started">Request Trial Setup</Cta></div>
         </nav>
       )}
     </header>
@@ -104,8 +114,8 @@ export function Footer() {
         <div><p className={h}>Product</p><div className={col}>
           <Link href="/features">Features</Link><Link href="/how-it-works">How It Works</Link><Link href="/about">About</Link></div></div>
         <div><p className={h}>Solutions</p><div className={col}>
-          <Link href="/solutions/contractors">For Contractors</Link><Link href="/solutions/permit-expediters">For Permit Expediters</Link>
-          <Link href={`/demo${q}`} data-testid="link-footer-demo">Request a Demo</Link><Link href={`/signup${q}`}>Get Started</Link></div></div>
+          <Link href="/solutions/contractors">For Contractors</Link>{tradeLinks.map((s) => <Link key={s.href} href={s.href} className="pl-3 text-background/80">{s.t}</Link>)}<Link href="/solutions/permit-expediters">For Permit Expediters</Link>
+          <Link href={`/demo${q}`} data-testid="link-footer-demo">Request a Demo / Free Trial</Link><Link href={`/signup${q}`} data-testid="link-footer-access">Request Trial Setup</Link></div></div>
         <div><p className={h}>Company</p><div className={col}>
           <a href={APP_URL} onClick={() => sendEvent('cta_sign_in')}>Sign In</a><Link href="/contact">Contact</Link>
           <Link href="/privacy">Privacy</Link><Link href="/terms">Terms</Link></div></div>

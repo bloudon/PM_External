@@ -7,6 +7,7 @@
  */
 import type { AccessRequestInputMonthlyPermitVolume } from './accessRequestInputMonthlyPermitVolume';
 import type { BusinessType } from './businessType';
+import type { Industry } from './industry';
 
 export interface AccessRequestInput {
   /**
@@ -21,6 +22,7 @@ export interface AccessRequestInput {
      */
   companyName: string;
   businessType: BusinessType;
+  industry?: Industry;
   /** @maxLength 40 */
   phone?: string;
   monthlyPermitVolume: AccessRequestInputMonthlyPermitVolume;

@@ -1,10 +1,17 @@
 import { type ReactNode } from 'react';
-import { Link } from 'wouter';
+import { Link, useLocation, useSearch } from 'wouter';
 import { Seo } from '@/components/seo';
 import { Shell } from '@/components/layout';
 import { Eyebrow, Reveal } from '@/components/bits';
 import { DemoForm, SignupForm, ContactForm } from '@/components/forms';
 import { APP_URL } from '@/lib/config';
+import { audienceQuery } from '@/lib/audience';
+
+function DemoContextLink() {
+  const [location] = useLocation();
+  const query = audienceQuery(location, useSearch());
+  return <Link href={`/demo${query}`} className="font-semibold underline">Request a demo</Link>;
+}
 
 function FormPage({ eyebrow, h1, lead, aside, children, title, desc }: { eyebrow: string; h1: string; lead: string; aside: ReactNode; children: ReactNode; title: string; desc: string }) {
   return (
@@ -28,12 +35,12 @@ function FormPage({ eyebrow, h1, lead, aside, children, title, desc }: { eyebrow
 export const DemoPage = () => (
   <FormPage title="Request a Demo / Free Trial | Permits Manager" desc="Request a walkthrough or trial setup of Permits Manager for your contracting or permit expediting business." eyebrow="Request a demo / free trial" h1="See how Permits Manager fits your workflow."
     lead="Tell us about your company and permitting challenge. We will follow up to arrange a walkthrough covering projects and permits, documents, assignments, inspections, and fees and billing as they apply to your business. Interested in a trial? Mention it and we will arrange your trial setup."
-    aside={<>30-day trial. Free standard setup and onboarding training. No credit card required. Request a demo or trial setup.<br /><br />Already a customer? <a href={APP_URL} className="font-semibold underline">Sign In</a>.</>}><DemoForm /></FormPage>
+    aside={<>30-day trial. Free standard setup and onboarding training. No credit card required. Submitting this form sends a request. We follow up to arrange your demo or trial setup.<br /><br />Already a customer? <a href={APP_URL} className="font-semibold underline">Sign In</a>.</>}><DemoForm /></FormPage>
 );
 export const SignupPage = () => (
-  <FormPage title="Get Started | Permits Manager" desc="Request access to Permits Manager for your contractor or permit expediting company." eyebrow="Get started" h1="Get started with Permits Manager."
-    lead="Tell us about your company. We’ll follow up with a guided walkthrough to get you up and running fast."
-    aside="You can import your existing contractors, and QuickBooks can pull in your accounts and fees for a quick, painless setup. Prefer to see the product first? Request a demo."><SignupForm /></FormPage>
+  <FormPage title="Request Trial Setup | Permits Manager" desc="Request access to Permits Manager for your contractor or permit expediting company." eyebrow="Request trial setup" h1="Request your Permits Manager trial setup."
+    lead="Tell us about your company. We will follow up to arrange access, free standard setup and onboarding training with your team."
+    aside={<>30-day trial. Free standard setup and onboarding training. No credit card required.<br /><br />You can import your existing contractors, and QuickBooks can pull in your accounts and fees for a quick, painless setup. Prefer to see the product first? <DemoContextLink />.</>}><SignupForm /></FormPage>
 );
 export const ContactPage = () => (
   <FormPage title="Contact | Permits Manager" desc="Send a general inquiry to the Permits Manager team." eyebrow="Contact" h1="Ask us anything."

@@ -3,6 +3,8 @@ import { Shell } from '@/components/layout';
 import { Cta, Eyebrow, H2, Reveal, Section } from '@/components/bits';
 import { mocks } from '@/components/product-ui';
 import { JobsitePhoto } from '@/components/jobsite-photo';
+import { Link } from 'wouter';
+import { ArrowUpRight } from 'lucide-react';
 import { FinalCta } from '@/pages/home';
 
 type Mk = keyof typeof mocks;
@@ -11,7 +13,7 @@ interface Cfg {
   pairs?: { user: string; owner: string }[]; quick?: { t: string; d: string }[];
   challenges: { t: string; d: string }[]; caps: { t: string; d: string }[];
   walk: { t: string; d: string; m?: Mk }[];
-  examples?: { t: string; d: string; flow: string; photo: 'roofing' | 'windows' | 'electrical' | 'fire-protection' | 'plumbing'; alt: string }[];
+  examples?: { link?: string; t: string; d: string; flow: string; photo: 'roofing' | 'windows' | 'electrical' | 'fire-protection' | 'plumbing'; alt: string }[];
   hero: Mk; cta: string; bt: 'contractor' | 'permit_expeditor';
 }
 
@@ -40,8 +42,8 @@ const contractors: Cfg = {
     { t: 'Inspection follow-up', d: 'Track inspections and the work that remains after each one.' },
   ],
   examples: [
-    { t: 'Roofing, windows, and other repeat-job contractors', d: 'Recurring permit workflows across many customer jobs.', flow: 'A coordinator opens the permits list each morning, sees which jobs are waiting on approval or need a correction, and assigns the follow-up before crews are scheduled.', photo: 'roofing', alt: 'A worker fastening shingles on a residential roof.' },
-    { t: 'HVAC, electrical, plumbing, and fire-protection contractors', d: 'Trade permits, supporting documents, and inspections.', flow: 'Office staff attach the application and supporting documents to the trade permit, then track the inspection and the next step once a result comes back.', photo: 'electrical', alt: 'Technician working inside an electrical control panel.' },
+    { link: '/solutions/contractors/roofing', t: 'Roofing, windows, and other repeat-job contractors', d: 'Recurring permit workflows across many customer jobs.', flow: 'A coordinator opens the permits list each morning, sees which jobs are waiting on approval or need a correction, and assigns the follow-up before crews are scheduled.', photo: 'roofing', alt: 'A worker fastening shingles on a residential roof.' },
+    { link: '/solutions/contractors/hvac', t: 'HVAC, electrical, plumbing, and fire-protection contractors', d: 'Trade permits, supporting documents, and inspections.', flow: 'Office staff attach the application and supporting documents to the trade permit, then track the inspection and the next step once a result comes back.', photo: 'electrical', alt: 'Technician working inside an electrical control panel.' },
     { t: 'General contractors and remodelers', d: 'Multiple permits and responsibilities within and across projects.', flow: 'A project manager reviews one project with its building and trade permits together, sees who owns each open item, and checks what is holding up the next inspection.', photo: 'windows', alt: 'Window installer working on a frame from inside a building.' },
   ],
   walk: [
@@ -100,7 +102,17 @@ function SolutionPage({ c }: { c: Cfg }) {
             <Reveal delay={0.08}><p className="mt-5 text-lg max-w-xl text-foreground/85">{c.lead}</p>
               {c.qualifier && <p data-testid="text-qualifier" className="mt-3 font-semibold">{c.qualifier}</p>}
               <ul className="mt-5 flex flex-wrap gap-2">{c.who.map((w) => <li key={w} className="border border-foreground/40 bg-card px-3 py-1 text-sm font-medium">{w}</li>)}</ul>
-              <div className="mt-8 flex flex-wrap gap-4"><Cta href={`/demo?businessType=${c.bt}`} id="solution-demo" arrow>Request a Demo</Cta><Cta href={`/signup?businessType=${c.bt}`} variant="ghost" id="solution-get-started">Get Started</Cta></div></Reveal>
+              <div className="mt-8 flex flex-wrap gap-4"><Cta href={`/demo?businessType=${c.bt}`} id="solution-demo" arrow>Request a Demo / Free Trial</Cta><Cta href={`/signup?businessType=${c.bt}`} variant="ghost" id="solution-get-started">Request Trial Setup</Cta></div>
+              <p className="mt-4 text-sm font-semibold">30-day trial. Free standard setup and onboarding training. No credit card required.</p>
+              <p className="mt-1 text-xs text-foreground/70">Send a request and we follow up to arrange your demo or trial setup.</p>
+              {c.bt === 'contractor' && (
+                <div className="mt-6 flex flex-wrap items-center gap-2" data-testid="nav-trade-links">
+                  <span className="font-mono text-xs uppercase tracking-[0.14em] text-foreground/70 mr-1">By trade</span>
+                  {[['roofing', 'Roofing'], ['windows-and-doors', 'Windows and Doors'], ['hvac', 'HVAC']].map(([s, l]) => (
+                    <Link key={s} href={`/solutions/contractors/${s}`} data-testid={`link-solution-trade-${s}`} className="inline-flex items-center gap-1 border-2 border-foreground bg-card px-3 py-1.5 text-sm font-semibold hover:bg-secondary">{l} <ArrowUpRight className="h-3.5 w-3.5" aria-hidden /></Link>
+                  ))}
+                </div>
+              )}</Reveal>
           </div>
           <Reveal delay={0.12}><Hero /></Reveal>
         </div>
@@ -167,6 +179,7 @@ function SolutionPage({ c }: { c: Cfg }) {
                     <figcaption className="p-5">
                       <h3 className="font-display text-xl font-bold">{x.t}</h3>
                       <p className="mt-1 text-sm font-semibold text-background/90">{x.d}</p>
+                      {x.link && <Link href={x.link} data-testid={`link-example-${x.link.split('/').pop()}`} className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-[hsl(200_88%_62%)] underline underline-offset-4">See the trade page <ArrowUpRight className="h-3.5 w-3.5" aria-hidden /></Link>}
                       <p className="mt-3 border-l-2 border-primary pl-3 text-sm text-background/75"><span className="font-mono text-[11px] uppercase tracking-[0.14em] text-[hsl(200_88%_62%)] block mb-1">Workflow example</span>{x.flow}</p>
                     </figcaption>
                   </figure>

@@ -108,6 +108,32 @@ test("blank optional demo details work and supplied From/To/Subject cannot overr
   });
 });
 
+test("demo and access inquiries email allowlisted industry context without requiring it", async () => {
+  await fixture(async (post, messages) => {
+    for (const kind of ["demo", "access"]) {
+      for (const industry of ["roofing", "windows-and-doors", "hvac", "other"]) {
+        const res = await post(`/inquiries/${kind}`, { ...demo, industry, monthlyPermitVolume: "11-25" });
+        assert.equal(res.status, 201);
+        assert.match(messages.at(-1)!.text, new RegExp(`Industry:\\n${industry}`));
+      }
+      const res = await post(`/inquiries/${kind}`, { ...demo, monthlyPermitVolume: "11-25" });
+      assert.equal(res.status, 201);
+      assert.ok(!messages.at(-1)!.text.includes("Industry:"));
+    }
+  });
+});
+
+test("unknown or malformed industry values are rejected before SMTP delivery", async () => {
+  await fixture(async (post, messages) => {
+    for (const kind of ["demo", "access"]) {
+      for (const industry of ["HVAC", "electrical", "", "<script>", "roofing\nBcc: example@example.test", 3]) {
+        assert.equal((await post(`/inquiries/${kind}`, { ...demo, industry, monthlyPermitVolume: "11-25" })).status, 400);
+      }
+    }
+    assert.equal(messages.length, 0);
+  });
+});
+
 test("invalid input, email injection, oversized fields and spam do not send", async () => {
   await fixture(async (post, messages) => {
     for (const body of [

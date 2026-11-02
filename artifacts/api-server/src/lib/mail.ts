@@ -59,7 +59,7 @@ export function createMailService(
   const titles = { demo: "Demo request", access: "Company access request", contact: "Contact message" };
   const labels: Record<string, string> = {
     fullName: "Full name", workEmail: "Work email", companyName: "Company",
-    businessType: "Business type", challenge: "Permitting details",
+    businessType: "Business type", challenge: "Permitting details", industry: "Industry",
     phone: "Phone", monthlyPermitVolume: "Monthly permit volume", message: "Message",
   };
   return {

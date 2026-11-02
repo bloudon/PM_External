@@ -251,6 +251,13 @@ components:
       enum:
         - contractor
         - permit_expeditor
+    Industry:
+      type: string
+      enum:
+        - roofing
+        - windows-and-doors
+        - hvac
+        - other
     DemoRequestInput:
       type: object
       properties:
@@ -267,6 +274,8 @@ components:
           maxLength: 160
         businessType:
           $ref: "#/components/schemas/BusinessType"
+        industry:
+          $ref: "#/components/schemas/Industry"
         challenge:
           type: string
           maxLength: 2000
@@ -291,6 +300,8 @@ components:
           maxLength: 160
         businessType:
           $ref: "#/components/schemas/BusinessType"
+        industry:
+          $ref: "#/components/schemas/Industry"
         phone:
           type: string
           maxLength: 40

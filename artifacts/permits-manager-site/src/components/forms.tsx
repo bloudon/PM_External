@@ -1,6 +1,6 @@
 import { useState, useId, useEffect, type ReactNode, type FormEvent } from 'react';
-import { Link, useSearch } from 'wouter';
-import { parseBt } from '@/lib/audience';
+import { Link, useLocation, useSearch } from 'wouter';
+import { parseBt, parseIndustry, requestQuery, industries, type Industry } from '@/lib/audience';
 import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useSubmitDemoRequest, useSubmitAccessRequest, useSubmitContactRequest } from '@workspace/api-client-react';
 import { APP_URL } from '@/lib/config';
@@ -12,9 +12,24 @@ type BTSel = BT | '';
 
 function useAudience() {
   const search = useSearch();
+  const [location, navigate] = useLocation();
   const [bt, setBt] = useState<BTSel>(() => parseBt(search));
-  useEffect(() => { setBt(parseBt(search)); }, [search]);
-  return [bt, setBt] as const;
+  const [industry, setIndustry] = useState<Industry | ''>(() => parseBt(search) === 'permit_expeditor' ? '' : parseIndustry(search));
+  useEffect(() => {
+    setBt(parseBt(search));
+    setIndustry(parseBt(search) === 'permit_expeditor' ? '' : parseIndustry(search));
+  }, [search]);
+  const updateBt = (value: BTSel) => {
+    setBt(value);
+    const nextIndustry = value === 'permit_expeditor' ? '' : industry;
+    setIndustry(nextIndustry);
+    navigate(`${location}${requestQuery(value, nextIndustry)}`, { replace: true });
+  };
+  const updateIndustry = (value: Industry | '') => {
+    setIndustry(value);
+    navigate(`${location}${requestQuery(bt, value)}`, { replace: true });
+  };
+  return [bt, updateBt, industry, updateIndustry] as const;
 }
 type Vol = '1-10' | '11-25' | '26-50' | '51-100' | '100+' | 'not_sure';
 
@@ -73,11 +88,22 @@ const typeOptions = (
   </>
 );
 
+function IndustryField({ id, value, onChange }: { id: string; value: Industry | ''; onChange: (value: Industry | '') => void }) {
+  return (
+    <Field label="Industry" optional htmlFor={id} hint="Choose your trade so we can tailor your walkthrough. You can change this before sending.">
+      <select id={id} name="industry" value={value} onChange={(e) => onChange(e.target.value as Industry | '')} className={input} data-testid="select-industry">
+        <option value="">Select an industry (optional)</option>
+        {industries.map((industry) => <option key={industry.value} value={industry.value}>{industry.label}</option>)}
+      </select>
+    </Field>
+  );
+}
+
 export function DemoForm() {
   const id = useId();
   const m = useSubmitDemoRequest();
   const sendEvent = useMarketingEvent();
-  const [bt, setBt] = useAudience();
+  const [bt, setBt, industry, setIndustry] = useAudience();
   const [process, setProcess] = useState('');
   const [challenge, setChallenge] = useState('');
   const details = buildDemoDetails(process, challenge);
@@ -91,7 +117,7 @@ export function DemoForm() {
       (e.currentTarget.elements.namedItem('challenge') as HTMLTextAreaElement)?.focus();
       return;
     }
-    m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), companyName: String(f.get('company')).trim(), businessType: bt, ...(submittedDetails.challenge ? { challenge: submittedDetails.challenge } : {}) } },
+    m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), companyName: String(f.get('company')).trim(), businessType: bt, ...(industry && bt !== 'permit_expeditor' ? { industry } : {}), ...(submittedDetails.challenge ? { challenge: submittedDetails.challenge } : {}) } },
       { onSuccess: () => sendEvent('demo_submitted') });
   };
   if (m.isSuccess) return <Success title="Request received" message={m.data.message}><p className="mt-3 text-sm text-foreground/80">We will follow up about your demo or trial setup. No trial, account, or login has been activated.</p><p className="mt-3 text-sm text-muted-foreground">Reference {m.data.id}</p></Success>;
@@ -101,6 +127,7 @@ export function DemoForm() {
       <Field label="Work email" htmlFor={id + 'e'}><input id={id + 'e'} name="email" type="email" required autoComplete="email" className={input} data-testid="input-email" /></Field>
       <Field label="Company" htmlFor={id + 'c'}><input id={id + 'c'} name="company" required minLength={2} maxLength={160} autoComplete="organization" className={input} data-testid="input-company" /></Field>
       <Field label="Business type" htmlFor={id + 'b'}><select id={id + 'b'} required value={bt} onChange={(e) => setBt(e.target.value as BTSel)} className={input} data-testid="select-business-type"><option value="" disabled>Select business type</option>{typeOptions}</select></Field>
+      {bt !== 'permit_expeditor' && <IndustryField id={id + 'industry'} value={industry} onChange={setIndustry} />}
       <Field label="How do you manage permits today?" optional htmlFor={id + 'p'}>
         <select id={id + 'p'} name="process" value={process} onChange={(e) => setProcess(e.target.value)} className={input} data-testid="select-current-process">
           <option value="">Select an option (optional)</option>
@@ -153,20 +180,20 @@ export function SignupForm() {
   const id = useId();
   const m = useSubmitAccessRequest();
   const sendEvent = useMarketingEvent();
-  const [bt, setBt] = useAudience();
+  const [bt, setBt, industry, setIndustry] = useAudience();
   const submit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (m.isPending) return;
     if (!bt) return;
     const f = new FormData(e.currentTarget);
     const phone = String(f.get('phone') || '').trim();
-    m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), companyName: String(f.get('company')).trim(), businessType: bt, monthlyPermitVolume: String(f.get('volume')) as Vol, ...(phone ? { phone } : {}) } },
+    m.mutate({ data: { fullName: String(f.get('name')).trim(), workEmail: String(f.get('email')).trim(), companyName: String(f.get('company')).trim(), businessType: bt, ...(industry && bt !== 'permit_expeditor' ? { industry } : {}), monthlyPermitVolume: String(f.get('volume')) as Vol, ...(phone ? { phone } : {}) } },
       { onSuccess: () => sendEvent('signup_submitted') });
   };
   if (m.isSuccess)
     return (
-      <Success title="Access request received" message={m.data.message}>
-        <p className="mt-3 text-sm text-foreground/80">Your emailed request is the first step toward your guided walkthrough to get you up and running fast. No login, account, or invitation has been created. Employees joining an existing company need an invitation from their administrator.</p>
+      <Success title="Trial setup request received" message={m.data.message}>
+        <p className="mt-3 text-sm text-foreground/80">We will follow up to arrange your trial setup and a guided walkthrough to get you up and running fast. No trial, login, account, or invitation has been activated. Employees joining an existing company need an invitation from their administrator.</p>
         <p className="mt-2 text-sm text-muted-foreground">Reference {m.data.id}</p>
       </Success>
     );
@@ -185,6 +212,7 @@ export function SignupForm() {
         </div>
         <p className="mt-3 text-sm text-foreground/80" data-testid="text-signup-intro">{bt ? intro[bt] : 'Choose the option that fits your company. You can change it at any time before sending.'}</p>
       </fieldset>
+      {bt !== 'permit_expeditor' && <IndustryField id={id + 'industry'} value={industry} onChange={setIndustry} />}
       <div className="grid sm:grid-cols-2 gap-5">
         <Field label="Full name" htmlFor={id + 'n'}><input id={id + 'n'} name="name" required minLength={2} maxLength={120} autoComplete="name" className={input} data-testid="input-name" /></Field>
         <Field label="Work email" htmlFor={id + 'e'}><input id={id + 'e'} name="email" type="email" required autoComplete="email" className={input} data-testid="input-email" /></Field>
@@ -199,7 +227,7 @@ export function SignupForm() {
         </select>
       </Field>
       {m.isError && <ErrorBox />}
-      <Submit pending={m.isPending}>Request Access</Submit>
+      <Submit pending={m.isPending}>Request Trial Setup</Submit>
       <p className="text-sm text-muted-foreground">
         Already have an account? <a href={APP_URL} className="font-semibold text-primary underline" data-testid="link-signup-signin">Sign In</a>.
         Joining a company that already uses Permits Manager? Ask your administrator for an invitation instead of requesting a new company. Questions? <Link href="/contact" className="underline">Contact us</Link>.

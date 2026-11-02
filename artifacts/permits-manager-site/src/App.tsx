@@ -15,6 +15,7 @@ const queryClient = new QueryClient();
 
 import Home from '@/pages/home';
 import { ContractorsPage, ExpeditersPage } from '@/pages/solutions';
+import { RoofingPage, WindowsDoorsPage, HvacPage } from '@/pages/trades';
 import Features from '@/pages/features';
 import How from '@/pages/how';
 import About from '@/pages/about';
@@ -28,6 +29,9 @@ function Router() {
     <RoutedErrorBoundary>
       <Switch>
         <Route path="/" component={Home} />
+        <Route path="/solutions/contractors/roofing" component={RoofingPage} />
+        <Route path="/solutions/contractors/windows-and-doors" component={WindowsDoorsPage} />
+        <Route path="/solutions/contractors/hvac" component={HvacPage} />
         <Route path="/solutions/contractors" component={ContractorsPage} />
         <Route path="/solutions/permit-expediters" component={ExpeditersPage} />
         <Route path="/features" component={Features} />

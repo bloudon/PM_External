@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { parseBt, audienceQuery } from '../src/lib/audience.ts';
+import { parseBt, parseIndustry, requestQuery, audienceQuery } from '../src/lib/audience.ts';
 
 test('direct visits and invalid audience values remain neutral', () => {
   for (const query of ['', '?businessType=unknown', '?businessType=', '?businessType=CONTRACTOR', '?other=contractor']) {
@@ -26,4 +26,27 @@ test('form-page links retain valid audience context without forwarding unrelated
     assert.equal(audienceQuery(page, '?businessType=invalid'), '');
   }
   assert.equal(audienceQuery('/features', '?businessType=contractor'), '');
+});
+
+test('trade pages infer only known industries with contractor attribution', () => {
+  for (const industry of ['roofing', 'windows-and-doors', 'hvac']) {
+    assert.equal(audienceQuery(`/solutions/contractors/${industry}`), `?businessType=contractor&industry=${industry}`);
+  }
+  assert.equal(audienceQuery('/solutions/contractors/unknown'), '?businessType=contractor');
+  assert.equal(audienceQuery('/solutions/contractors-malicious'), '');
+});
+
+test('form navigation carries editable allowlisted industry but not unrelated query data', () => {
+  for (const page of ['/demo', '/signup']) {
+    assert.equal(audienceQuery(page, '?businessType=contractor&industry=hvac&secret=abc'), '?businessType=contractor&industry=hvac');
+    assert.equal(audienceQuery(page, '?industry=roofing'), '?industry=roofing');
+    assert.equal(audienceQuery(page, '?businessType=permit_expeditor&industry=roofing'), '?businessType=permit_expeditor');
+    assert.equal(audienceQuery(page, '?industry=invalid'), '');
+  }
+  assert.equal(requestQuery('contractor', ''), '?businessType=contractor');
+  assert.equal(requestQuery('', ''), '');
+  assert.equal(parseIndustry('?industry=windows-and-doors'), 'windows-and-doors');
+  for (const query of ['', '?industry=HVAC', '?industry=electrical', '?industry=%3Cscript%3E']) {
+    assert.equal(parseIndustry(query), '');
+  }
 });

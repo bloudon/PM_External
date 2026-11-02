@@ -5,7 +5,7 @@ type ScreenshotProps = { label?: boolean };
 
 const asset = (n: string) => `${import.meta.env.BASE_URL}product-screenshots/${n}`;
 
-function ProductScreenshot({ focus, full, alt, caption, label = false, name }: ScreenshotProps & { focus: string; full: string; alt: string; caption: string; name: string }) {
+function ProductScreenshot({ focus, full, alt, caption, label = false, name, privacyNote = true }: ScreenshotProps & { focus: string; full: string; alt: string; caption: string; name: string; privacyNote?: boolean }) {
   return (
     <figure className="m-0">
       <Dialog>
@@ -27,7 +27,7 @@ function ProductScreenshot({ focus, full, alt, caption, label = false, name }: S
         </DialogContent>
       </Dialog>
       <figcaption className="mt-4 font-mono text-[11px] text-muted-foreground">
-        {caption} Real application screenshot; identifying record details are hidden.
+        {caption} {privacyNote ? 'Real application screenshot; identifying record details are hidden.' : 'Real application screenshot of attached job files, not the annotation editor.'}
         {label ? ' Select the image to view the full screen.' : ''}
       </figcaption>
     </figure>
@@ -49,8 +49,15 @@ export function InspectionsMock(props: ScreenshotProps) {
     alt="Permits Manager inspections dashboard in light mode, with inspection statuses, scheduled dates and types." {...props} />;
 }
 
+export function DocumentFilesScreenshot(props: ScreenshotProps) {
+  return <ProductScreenshot name="documents" focus="documents-attached-files.png" full="documents-attached-files.png"
+    caption="Documents: attached job files grouped by submission." privacyNote={false}
+    alt="Documents section with submission tabs, an upload area and attached project PDF files." {...props} />;
+}
+
 export const mocks = {
   dashboard: DashboardMock,
   permits: PermitsMock,
   inspections: InspectionsMock,
+  documents: DocumentFilesScreenshot,
 };

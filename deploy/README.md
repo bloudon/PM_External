@@ -344,6 +344,28 @@ No Nginx edits, database setup, SMTP setting changes, or AI credentials are need
 
 See `artifacts/permits-manager-site/assets/intro-video.md` for caption provenance, measurement semantics, and the journal command for viewing events.
 
+### Trade landing pages and industry requests
+
+The roofing, windows-and-doors, and HVAC pages use the existing Nginx static-site root and SPA fallback. No Nginx edits or new services are required. Both `/demo` and `/signup` remain requests with follow-up, not account creation or trial activation.
+
+Industry is optional and allowlisted in both the frontend and API. A selection from a trade page is editable in the request form and included in the inquiry email. Update **both packages** using the pull/install/build/restart block above, after pushing the Replit commits to GitHub. Restart only `permitsmanager-marketing-api`; leave the application on port 3000 and all other VPS services unchanged. Existing SMTP settings remain in the protected server-side environment file.
+
+After the rebuild, confirm the readiness response, which checks configuration but not email delivery:
+
+```bash
+curl --retry 5 --retry-connrefused --retry-delay 2 --max-time 15 \
+  --fail --silent --show-error https://permitsmanager.com/api/readyz
+echo
+```
+
+Hard-refresh the website, open each trade page directly, and check its request link:
+
+- `https://permitsmanager.com/solutions/contractors/roofing`
+- `https://permitsmanager.com/solutions/contractors/windows-and-doors`
+- `https://permitsmanager.com/solutions/contractors/hvac`
+
+The request should preselect Contractor and the matching industry. Any real SMTP delivery test requires owner approval; automated tests use a stub transport and do not send live messages. No application onboarding, active-job, or paid-conversion measurement is added by these pages.
+
 ### E. Verify real delivery before declaring forms live
 
 1. Confirm `SMTP_TO` with the owner and authorize a real test. Submit a uniquely labeled message through Contact and confirm receipt in that inbox (check spam too). Confirm fixed sender and visitor Reply-To.

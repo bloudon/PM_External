@@ -45,6 +45,7 @@ export const SubmitDemoRequestBody = zod.object({
   "workEmail": zod.string().email(),
   "companyName": zod.string().min(submitDemoRequestBodyCompanyNameMin).max(submitDemoRequestBodyCompanyNameMax),
   "businessType": zod.enum(['contractor', 'permit_expeditor']),
+  "industry": zod.enum(['roofing', 'windows-and-doors', 'hvac', 'other']).optional(),
   "challenge": zod.string().max(submitDemoRequestBodyChallengeMax).optional()
 })
 
@@ -74,6 +75,7 @@ export const SubmitAccessRequestBody = zod.object({
   "workEmail": zod.string().email(),
   "companyName": zod.string().min(submitAccessRequestBodyCompanyNameMin).max(submitAccessRequestBodyCompanyNameMax),
   "businessType": zod.enum(['contractor', 'permit_expeditor']),
+  "industry": zod.enum(['roofing', 'windows-and-doors', 'hvac', 'other']).optional(),
   "phone": zod.string().max(submitAccessRequestBodyPhoneMax).optional(),
   "monthlyPermitVolume": zod.enum(['1-10', '11-25', '26-50', '51-100', '100+', 'not_sure'])
 })
