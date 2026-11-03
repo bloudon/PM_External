@@ -121,7 +121,7 @@ export const trades: Record<TradeSlug, Trade> = {
     ],
     shots: [
       { m: 'inspections', t: 'Inspections with dates and types', d: 'The inspections view shows statuses, scheduled dates and inspection types.' },
-      { m: 'permits', t: 'Which trade permits are still open', d: 'Permit statuses and jurisdictions in one list.' },
+      { m: 'dashboard', t: 'Paperwork and corrections that need attention', d: 'Dashboard alerts highlight missing paperwork, corrections and expired permits.' },
     ],
     faqs: [
       { q: 'Does it replace our dispatch or field service software?', a: 'No. Permits Manager tracks permits, inspections, documents and assignments. Keep your existing crew-scheduling tools and use this workspace for permit and inspection follow-up.' },

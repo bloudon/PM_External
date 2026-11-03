@@ -10,6 +10,12 @@ The owner approved zoomed-in crops of the existing application screenshots for p
 
 **How to apply:** Use genuine cropped views, redact identifying records, and label crops accurately. Request additional genuine screenshots for unsupported visual claims.
 
+Do not use screenshots with visible window/door permit rows as HVAC examples.
+
+**Why:** The owner flagged the window/door permits image on the HVAC landing page as inappropriate.
+
+**How to apply:** Use genuine trade-neutral views unless an approved screenshot contains records relevant to the landing page's trade. Never change screenshot text to fabricate trade-specific records.
+
 The owner supplied the Documents attached-files view for public use because opening the annotation editor exposes client information.
 
 **Why:** The owner wants to show real document functionality without revealing client details.
