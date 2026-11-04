@@ -50,7 +50,7 @@ export function InspectionsMock(props: ScreenshotProps) {
 }
 
 export function DocumentFilesScreenshot(props: ScreenshotProps) {
-  return <ProductScreenshot name="documents" focus="documents-attached-files.png" full="documents-attached-files.png"
+  return <ProductScreenshot name="documents" focus="documents-attached-files-redacted.png" full="documents-attached-files-redacted.png"
     caption="Documents: attached job files grouped by submission." privacyNote={false}
     alt="Documents section with submission tabs, an upload area and attached project PDF files." {...props} />;
 }

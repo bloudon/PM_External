@@ -7,7 +7,7 @@ root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 dir="$root/public/product-screenshots"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT HUP INT TERM
-for name in dashboard-dark permits-dark inspections-light contractors-light; do
+for name in dashboard-dark permits-dark inspections-light contractors-light documents-attached-files; do
     cp "$dir/$name.png" "$tmp/$name.png"
 done
 
@@ -39,4 +39,12 @@ convert "$dir/inspections-light.png" -crop 530x360+785+220 +repage \
 convert "$tmp/contractors-light.png" \
     -fill '#e5e7eb' -draw 'rectangle 260,45 1775,902' \
     "$dir/contractors-light.png"
+
+# Filenames can contain client, contractor, or identity-document information.
+# Permanently mask the entire filename band across all seven document cards,
+# not just the known identifying filename. Sanitize the legacy URL as well.
+convert "$tmp/documents-attached-files.png" \
+    -fill '#e5e7eb' -draw 'rectangle 18,291 739,328' -strip \
+    "$dir/documents-attached-files.png"
+cp "$dir/documents-attached-files.png" "$dir/documents-attached-files-redacted.png"
 printf 'Prepared real screenshot crops and opaque record redactions.\n'

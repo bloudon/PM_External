@@ -20,7 +20,7 @@ The owner supplied the Documents attached-files view for public use because open
 
 **Why:** The owner wants to show real document functionality without revealing client details.
 
-**How to apply:** Label this image as the Documents or attached-files view, not the annotation editor. Do not request an unredacted client PDF to illustrate annotations.
+**How to apply:** Label this image as the Documents or attached-files view, not the annotation editor. Permanently redact document filenames in every public copy, including enlarged images and legacy asset URLs: the owner subsequently identified a contractor name embedded in a filename. Do not request an unredacted client PDF to illustrate annotations.
 
 The owner chose to leave the current Privacy and Terms pages unchanged and said, “I will update privacy/terms later.”
 
